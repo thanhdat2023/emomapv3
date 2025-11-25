@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitty AI - Final Fixed</title>
+    <title>Kitty AI - No More Talk, Just Music</title>
     <style>
-        /* --- GIAO DIỆN CHUẨN CŨ (GIỮ NGUYÊN) --- */
+        /* --- CẤU HÌNH GIAO DIỆN (GIỮ NGUYÊN ĐẸP) --- */
         :root { --primary: #ff9f43; --bg-color: #fff0e6; --chat-ai: #ffffff; }
         body.theme-sad { --primary: #74b9ff; --bg-color: #f1f7ff; }
         body.theme-stress { --primary: #ff7675; --bg-color: #fff0f0; }
@@ -17,10 +17,11 @@
 
         .app-container { width: 100%; max-width: 450px; height: 95vh; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); display: flex; flex-direction: column; position: relative; overflow: hidden; border: 2px solid var(--primary); }
 
+        /* SCREENS */
         .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 10; display: none; flex-direction: column; overflow-y: auto; }
         .screen.active { display: flex; animation: fadeIn 0.5s; }
 
-        /* AUTH SCREEN */
+        /* AUTH */
         #screen-auth { justify-content: center; align-items: center; padding: 30px; }
         .auth-card { background: white; padding: 30px; border-radius: 20px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid var(--primary); }
         .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
@@ -31,7 +32,7 @@
         .auth-input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; outline: none; font-size: 1rem; }
         .btn-primary { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem; }
 
-        /* CHAT SCREEN */
+        /* CHAT UI */
         #screen-chat { padding: 0; overflow: hidden; }
         .header { padding: 15px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: space-between; z-index: 20; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .avatar-wrapper { width: 40px; height: 40px; }
@@ -49,6 +50,7 @@
 
         /* INPUT CONTAINER */
         .input-container { min-height: 80px; background: white; border-top: 1px solid #eee; display: flex; align-items: center; justify-content: center; padding: 5px 10px; position: relative; z-index: 30; }
+        
         #text-input-mode { width: 100%; display: none; gap: 10px; align-items: center; }
         #text-input-mode.active { display: flex; }
         input { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 20px; outline: none; }
@@ -63,7 +65,7 @@
         .emoji-btn:hover .e-icon { filter: grayscale(0%); transform: scale(1.2); }
         .emoji-btn:hover .e-text { color: var(--primary); }
 
-        /* TOOLS */
+        /* TOOLS & EXTRAS */
         .tools-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; background: #fafafa; border-top: 1px solid #eee; padding: 8px 0; }
         .tool-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #888; font-size: 0.75rem; }
         .tool-btn:hover { color: var(--primary); }
@@ -130,7 +132,8 @@
                         <div style="font-size: 0.7rem; opacity: 0.9;" id="statusText">Trợ lý của bạn</div>
                     </div>
                 </div>
-                <button class="logout-btn" onclick="handleLogout()">Thoát <i class="fas fa-sign-out-alt"></i></button>
+                <div class="mhi-score"><span id="mhiScore">75</span>/100</div>
+                <button class="logout-btn" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i></button>
             </div>
             <div class="chat-area" id="chatBox"></div>
             <div class="typing" id="typingIndicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
@@ -167,12 +170,9 @@
         const API_KEY = "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"; 
         // ============================================================
 
-        // --- LINK NHẠC (DẠNG EMBED CHUẨN) ---
-        // Link Playlist Vui (Đã sửa thành embed)
-        const LINK_VUI = "https://open.spotify.com/embed/playlist/4lPLZ0npUWzSpeg0BPOVdp?si=UjYu0QMTTiudxfcW1kPKxg"; 
-        
-        // Link Playlist Lofi/Buồn (Đã sửa thành embed)
-        const LINK_LOFI = "https://open.spotify.com/embed/playlist/0jSMk9A4W6wnFUkfrBuRaG?si=-W7y9Rc6Sxq_k6MhiTugRw"; 
+        // --- LINK NHẠC CHUẨN (EMBED) ---
+        const LINK_VUI = "https://open.spotify.com/embed/playlist/4lPLZ0npUWzSpeg0BPOVdp?si=UjYu0QMTTiudxfcW1kPKxg";
+        const LINK_LOFI = "https://open.spotify.com/embed/playlist/0jSMk9A4W6wnFUkfrBuRaG?si=-W7y9Rc6Sxq_k6MhiTugRw";
 
         const questions = [
             "Mình cảm thấy an toàn khi ở trường học.", "Mình từng bị ai đó đánh, xô đẩy hoặc làm đau.",
@@ -186,7 +186,7 @@
         let messages = []; let mhiScore = 75; let currentUser = null; let surveyResults = [];
         let currentQIndex = 0; let history = []; let audioCtx, whiteNoiseSource;
 
-        // --- AUTHENTICATION ---
+        // --- 1. AUTHENTICATION ---
         function switchAuthTab(t) {
             document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
             if(t==='login'){ document.getElementById('form-login').classList.add('active'); } else { document.getElementById('form-register').classList.add('active'); }
@@ -213,7 +213,7 @@
         }
         function handleLogout() { location.reload(); }
 
-        // --- SURVEY & CHAT LOGIC ---
+        // --- 2. SURVEY & CHAT LOGIC ---
         function startSurveyChat() {
             addMessage(`Chào <b>${currentUser.profile.name}</b>! Mình là Kitty AI. Để hiểu bạn hơn, mình xin hỏi 10 câu nhé.`, 'ai');
             setTimeout(askNextQuestion, 1500);
@@ -254,16 +254,22 @@
             toggleInputMode('text');
             
             let surveyText = questions.map((q, i) => `- ${q}: ${surveyResults[i]}/5`).join('\n');
+            // --- SYSTEM PROMPT CHỐNG LÈ NHÈ ---
             const sys = `Bạn là Kitty AI. User: ${currentUser.profile.name}. Kết quả khảo sát bạo lực: ${surveyText}.
-            Quy tắc: Phân tích ngắn gọn. Nếu tiêu cực -> AN ỦI & hỏi "Cậu có muốn nghe nhạc Lofi không?".`;
+            QUY TẮC QUAN TRỌNG:
+            1. Phân tích ngắn gọn (dưới 3 câu).
+            2. Nếu kết quả tiêu cực (bị bắt nạt) -> HÃY HỎI NGAY: "Cậu có muốn nghe nhạc Lofi không?".
+            3. Nếu user đồng ý nghe nhạc (có/ok/uh/nghe...) -> CHỈ TRẢ LỜI DUY NHẤT CỤM TỪ: "PLAY_SPOTIFY_NOW". KHÔNG NÓI THÊM GÌ KHÁC.
+            `;
             messages.push({role:"system", content:sys});
             callAI(sys);
         }
 
         function startChatDirectly() {
             toggleInputMode('text');
+            // --- SYSTEM PROMPT CHỐNG LÈ NHÈ ---
             const sys = `Bạn là Kitty AI. User: ${currentUser.profile.name}. Hỏi thăm "Hôm nay bạn thế nào?".
-            Nếu user buồn -> Hỏi nghe nhạc. Nếu user đồng ý nghe -> TRẢ LỜI DUY NHẤT: "PLAY_SPOTIFY_NOW".`;
+            QUY TẮC: Nếu user buồn và đồng ý nghe nhạc -> CHỈ TRẢ LỜI DUY NHẤT CỤM TỪ: "PLAY_SPOTIFY_NOW".`;
             messages.push({role:"system", content:sys});
             callAI("Chào bạn quay lại!");
         }
@@ -287,8 +293,19 @@
                     const data = await res.json();
                     const txt = data.choices[0].message.content;
                     document.getElementById('typingIndicator').style.display='none';
+                    
+                    // --- XỬ LÝ KẾT QUẢ TỪ AI ---
                     messages.push({role:"assistant", content:txt});
                     processResp(txt);
+                    
+                    let adminData = JSON.parse(localStorage.getItem('admin_data_all')) || [];
+                    let idx = adminData.findIndex(x => x.name === currentUser.profile.name);
+                    if(idx >= 0) {
+                        if(txt.includes("buồn") || txt.includes("lo")) adminData[idx].lastMood = "Buồn/Lo âu";
+                        else if(txt.includes("vui")) adminData[idx].lastMood = "Vui vẻ";
+                        localStorage.setItem('admin_data_all', JSON.stringify(adminData));
+                    }
+
                 } else {
                     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                         method: "POST", headers: {"Content-Type":"application/json", "Authorization":`Bearer ${API_KEY}`},
@@ -303,20 +320,25 @@
             } catch(e) { document.getElementById('typingIndicator').style.display='none'; addMessage("Lỗi: "+e.message, 'ai'); }
         }
 
-        // --- XỬ LÝ NHẠC VÀ LOGIC CŨ (ĐÃ SỬA) ---
+        // --- XỬ LÝ NHẠC ---
         function processResp(t) {
+            // KIỂM TRA MẬT MÃ BẬT NHẠC
             if (t.includes("PLAY_SPOTIFY_NOW")) {
                 addMessage("Oki! Nhạc lên. 🎶", 'ai');
-                // Logic cũ của bạn: Check ngữ cảnh để chọn nhạc vui/buồn
+                
+                // Logic chọn nhạc
+                const checkText = t.toLowerCase() + " " + (messages[messages.length-2]?.content.toLowerCase() || "");
                 let link = LINK_LOFI; 
-                const context = messages.slice(-3).map(m=>m.content.toLowerCase()).join(" "); // Kiểm tra 3 tin nhắn gần nhất
-                if (context.includes("vui") || context.includes("tuyệt") || context.includes("hạnh phúc")) {
+                if (checkText.includes("vui") || checkText.includes("tuyệt") || checkText.includes("hạnh phúc")) {
                     link = LINK_VUI;
                 }
                 addMessage(`<iframe style="border-radius:12px; margin-top:10px;" src="${link}" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`, 'ai');
+            
             } else { 
+                // Nếu không phải bật nhạc thì hiện lời chat bình thường
                 addMessage(t.replace(/\*\*/g,''), 'ai'); 
             }
+            
             const low = t.toLowerCase();
             if(low.includes('buồn')||low.includes('khóc')) changeTheme('sad');
             else if(low.includes('vui')) changeTheme('happy');
