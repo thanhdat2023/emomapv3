@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cổng Thông Tin Kitty AI</title>
+    <style>
+        body {
+            margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #fff0e6, #ffeaa7);
+            height: 100vh; display: flex; justify-content: center; align-items: center;
+        }
+        .container {
+            text-align: center; background: white; padding: 50px;
+            border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            max-width: 500px; width: 90%;
+        }
+        h1 { color: #ff9f43; font-size: 2.5rem; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 40px; }
+        
+        .btn-group { display: flex; flex-direction: column; gap: 20px; }
+        
+        .btn {
+            padding: 20px; border-radius: 15px; text-decoration: none;
+            font-weight: bold; font-size: 1.2rem; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        
+        /* Nút Học Sinh */
+        .btn-student { background: #ff9f43; color: white; box-shadow: 0 10px 20px rgba(255, 159, 67, 0.3); }
+        .btn-student:hover { transform: translateY(-5px); background: #e67e22; }
+        
+        /* Nút Giáo Viên */
+        .btn-admin { background: white; color: #2c3e50; border: 2px solid #eee; }
+        .btn-admin:hover { background: #f9f9f9; border-color: #bdc3c7; }
+
+        .footer { margin-top: 30px; font-size: 0.8rem; color: #aaa; }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <i class="fas fa-cat" style="font-size: 4rem; color: #ff9f43; margin-bottom: 20px;"></i>
+        <h1>Kitty AI</h1>
+        <p>Hệ thống Chăm sóc Sức khỏe Tinh thần Học đường</p>
+
+        <div class="btn-group">
+            <a href="hoc_sinh.html" class="btn btn-student">
+                <i class="fas fa-user-graduate"></i> Dành cho Học sinh
+            </a>
+            <a href="admin.html" class="btn btn-admin">
+                <i class="fas fa-chalkboard-teacher"></i> Dành cho Giáo viên
+            </a>
+        </div>
+
+        <div class="footer">Phiên bản 1.0 • Powered by Groq AI</div>
+    </div>
+
+</body>
+</html>

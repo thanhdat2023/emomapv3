@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitty AI - Student App</title>
+    <style>
+        :root { --primary: #ff9f43; --bg-color: #fff0e6; --chat-ai: #ffffff; }
+        body.theme-sad { --primary: #74b9ff; --bg-color: #f1f7ff; }
+        body.theme-stress { --primary: #ff7675; --bg-color: #fff0f0; }
+        body.theme-happy { --primary: #00b894; --bg-color: #e6fffa; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: all 0.3s ease; }
+        body { background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .app-container { width: 100%; max-width: 450px; height: 95vh; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); display: flex; flex-direction: column; position: relative; overflow: hidden; border: 2px solid var(--primary); }
+        .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 10; display: none; flex-direction: column; overflow-y: auto; }
+        .screen.active { display: flex; animation: fadeIn 0.5s; }
+        #screen-auth { justify-content: center; align-items: center; padding: 30px; }
+        .auth-card { background: white; padding: 30px; border-radius: 20px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid var(--primary); }
+        .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
+        .tab-btn { flex: 1; padding: 10px; border: none; background: none; cursor: pointer; font-weight: bold; color: #999; transition: 0.3s; }
+        .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+        .auth-form { display: none; flex-direction: column; gap: 15px; }
+        .auth-form.active { display: flex; }
+        .auth-input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; outline: none; font-size: 1rem; }
+        .btn-primary { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        #screen-chat { padding: 0; overflow: hidden; }
+        .header { padding: 15px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: space-between; z-index: 20; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .avatar-wrapper { width: 40px; height: 40px; }
+        .kitty-svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)); }
+        .chat-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: rgba(255,255,255,0.6); scroll-behavior: smooth; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; animation: fadeUp 0.3s ease; }
+        .msg.ai { align-self: flex-start; background: var(--chat-ai); color: #333; border-bottom-left-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .msg.user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+        .typing { display: none; gap: 5px; padding: 10px; margin-left: 10px; background: white; border-radius: 15px; width: fit-content; }
+        .dot { width: 6px; height: 6px; background: #ccc; border-radius: 50%; animation: blink 1.4s infinite both; }
+        .dot:nth-child(2) { animation-delay: 0.2s; } .dot:nth-child(3) { animation-delay: 0.4s; }
+        .input-container { min-height: 80px; background: white; border-top: 1px solid #eee; display: flex; align-items: center; justify-content: center; padding: 5px 10px; position: relative; z-index: 30; }
+        #text-input-mode { width: 100%; display: none; gap: 10px; align-items: center; }
+        #text-input-mode.active { display: flex; }
+        input { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 20px; outline: none; }
+        .send-btn { padding: 10px 15px; background: var(--primary); border: none; border-radius: 50%; color: white; cursor: pointer; font-size: 1rem; }
+        #survey-input-mode { width: 100%; display: none; justify-content: space-between; padding: 0 5px; }
+        #survey-input-mode.active { display: flex; }
+        .emoji-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; transition: 0.2s; opacity: 0.5; flex: 1; }
+        .emoji-btn:hover { opacity: 1; transform: translateY(-3px); }
+        .e-icon { font-size: 1.8rem; filter: grayscale(100%); transition: 0.2s; }
+        .e-text { font-size: 0.6rem; font-weight: bold; color: #888; margin-top: 3px; text-align: center; line-height: 1.1; }
+        .emoji-btn:hover .e-icon { filter: grayscale(0%); transform: scale(1.2); }
+        .emoji-btn:hover .e-text { color: var(--primary); }
+        .tools-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; background: #fafafa; border-top: 1px solid #eee; padding: 8px 0; }
+        .tool-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #888; font-size: 0.75rem; }
+        .tool-btn:hover { color: var(--primary); }
+        .float-reset { position: absolute; bottom: 130px; right: 15px; width: 45px; height: 45px; background: white; border: 2px solid var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.1); cursor: pointer; z-index: 50; }
+        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 100; display: none; flex-direction: column; padding: 20px; animation: slideUp 0.3s; }
+        .modal.active { display: flex; }
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; color: var(--primary); font-size: 1.2rem; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .close-btn { cursor: pointer; background: none; border: none; font-size: 1.5rem; }
+        .therapy-item { background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .therapy-btn-mini { background: var(--primary); color: white; border: none; padding: 5px 15px; border-radius: 15px; cursor: pointer; font-size: 0.8rem; }
+        .map-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 20px; }
+        .dot-map { width: 35px; height: 35px; border-radius: 50%; background: #eee; display: flex; justify-content: center; align-items: center; font-size: 0.6rem; color: white; font-weight: bold; }
+        #resetOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #a8e6cf, #dcedc1); z-index: 300; display: none; flex-direction: column; justify-content: center; align-items: center; color: #2d3436; }
+        .reset-circle { width: 150px; height: 150px; border: 5px solid white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; font-weight: bold; color: white; animation: breathe 8s infinite; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes breathe { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        @keyframes blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <div id="screen-auth" class="screen active">
+            <div class="auth-card">
+                <h1 style="color:var(--primary); margin-bottom:20px; text-align:center;">Kitty AI 🛡️</h1>
+                <div class="auth-tabs">
+                    <button class="tab-btn active" onclick="switchAuthTab('login')">Đăng nhập</button>
+                    <button class="tab-btn" onclick="switchAuthTab('register')">Đăng ký</button>
+                </div>
+                <div id="form-login" class="auth-form active">
+                    <input type="text" id="loginUser" class="auth-input" placeholder="Tên đăng nhập">
+                    <input type="password" id="loginPass" class="auth-input" placeholder="Mật khẩu">
+                    <button class="btn-primary" onclick="handleLogin()">Vào lớp ngay</button>
+                </div>
+                <div id="form-register" class="auth-form">
+                    <input type="text" id="regUser" class="auth-input" placeholder="Tên đăng nhập">
+                    <input type="password" id="regPass" class="auth-input" placeholder="Mật khẩu">
+                    <input type="text" id="regName" class="auth-input" placeholder="Họ và tên thật">
+                    <select id="regClass" class="auth-input">
+                        <option value="" disabled selected>-- Chọn lớp --</option>
+                        <option value="10A1">10A1</option><option value="10A2">10A2</option><option value="10A3">10A3</option>
+                        <option value="10A4">10A4</option><option value="10A5">10A5</option>
+                    </select>
+                    <select id="regGender" class="auth-input">
+                        <option value="Nam">Nam</option><option value="Nữ">Nữ</option>
+                    </select>
+                    <button class="btn-primary" onclick="handleRegister()">Tạo tài khoản</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-chat" class="screen">
+            <div class="header">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="avatar-wrapper">
+                        <svg class="kitty-svg" viewBox="0 0 512 512"><path fill="#fff" d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0z"/><path fill="#333" d="M368 152a24 24 0 1 1 0 48 24 24 0 1 1 0-48zM144 152a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/><path fill="#e55039" d="M256 270c-10 0-18 5-18 12s8 12 18 12s18-5 18-12s-8-12-18-12z"/><path fill="#ff9f43" d="M376.6 96c-13.7-13.7-32-21.4-51.7-21.4H187.1c-19.7 0-38 7.7-51.7 21.4C122.1 110.1 114.6 128.4 114.6 148.1V176c0 8.8 7.2 16 16 16h256c8.8 0 16-7.2 16-16v-27.9c0-19.7-7.5-38-21.4-51.7z"/></svg>
+                    </div>
+                    <div>
+                        <div style="font-weight: bold;">Kitty AI</div>
+                        <div style="font-size: 0.7rem; opacity: 0.9;" id="statusText">Trợ lý của bạn</div>
+                    </div>
+                </div>
+                <div class="mhi-score"><span id="mhiScore">75</span>/100</div>
+            </div>
+            <div class="chat-area" id="chatBox"></div>
+            <div class="typing" id="typingIndicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+            <div class="float-reset" onclick="activateReset()" title="Reset Tâm Trí"><i class="fas fa-redo"></i></div>
+            <div class="input-container">
+                <div id="text-input-mode">
+                    <input type="text" id="userInput" placeholder="Nhắn tin..." autocomplete="off">
+                    <button class="send-btn" onclick="handleChat()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+                <div id="survey-input-mode">
+                    <button class="emoji-btn" onclick="handleSurveyAnswer(1)"><div class="e-icon">😠</div><div class="e-text">Rất sai</div></button>
+                    <button class="emoji-btn" onclick="handleSurveyAnswer(2)"><div class="e-icon">😞</div><div class="e-text">Sai</div></button>
+                    <button class="emoji-btn" onclick="handleSurveyAnswer(3)"><div class="e-icon">😐</div><div class="e-text">Bthg</div></button>
+                    <button class="emoji-btn" onclick="handleSurveyAnswer(4)"><div class="e-icon">🙂</div><div class="e-text">Đúng</div></button>
+                    <button class="emoji-btn" onclick="handleSurveyAnswer(5)"><div class="e-icon">🤩</div><div class="e-text">Rất đúng</div></button>
+                </div>
+            </div>
+            <div class="tools-bar">
+                <button class="tool-btn" onclick="toggleModal('statsModal')"><i class="fas fa-chart-line"></i> Thống kê</button>
+                <button class="tool-btn" onclick="toggleModal('therapyModal')"><i class="fas fa-heartbeat"></i> Trị liệu</button>
+                <button class="tool-btn" onclick="toggleModal('mapModal')"><i class="fas fa-users"></i> Lớp học</button>
+            </div>
+        </div>
+
+        <div class="modal" id="statsModal"><div class="modal-header"><span>📅 Nhật Ký</span><button class="close-btn" onclick="toggleModal('statsModal')">×</button></div><div id="timelineContent"></div></div>
+        <div class="modal" id="mapModal"><div class="modal-header"><span>🗺️ Lớp <span id="classTitle"></span></span><button class="close-btn" onclick="toggleModal('mapModal')">×</button></div><div class="map-grid" id="classMapGrid"></div></div>
+        <div class="modal" id="therapyModal"><div class="modal-header"><span>💊 Trị Liệu</span><button class="close-btn" onclick="toggleModal('therapyModal')">×</button></div><div class="therapy-item"><span>Hít thở 4-7-8</span><button class="therapy-btn-mini" onclick="startExercise('breath')">Tập</button></div><div class="therapy-item"><span>Duỗi cổ vai</span><button class="therapy-btn-mini" onclick="startExercise('stretch')">Tập</button></div></div>
+        <div id="resetOverlay"><h2>Thư giãn...</h2><div class="reset-circle" id="resetCount">30</div><p>Tiếng ồn trắng</p><button onclick="closeReset()" style="margin-top:30px; padding:10px 30px; border-radius:20px; border:none; font-weight:bold;">Đã ổn hơn</button></div>
+    </div>
+
+    <script>
+        // ============================================================
+        // ⚠️ DÁN KEY GROQ VÀO ĐÂY
+        const API_KEY = "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"; 
+        // ============================================================
+
+        const LINK_VUI = "https://open.spotify.com/embed/playlist/2s9R059mUf28NY9B2yT2QZ";
+        const LINK_LOFI = "https://open.spotify.com/embed/playlist/0vvXsWCC9xrXsKd4FyS8kM";
+
+        const questions = [
+            "Mình cảm thấy an toàn khi ở trường học.", "Mình từng bị ai đó đánh, xô đẩy hoặc làm đau.",
+            "Mình bị bạn bè nói xấu, gán ghép biệt danh.", "Mình cảm thấy bị cô lập, không ai chơi cùng.",
+            "Mình bị nhắn tin đe dọa trên mạng xã hội.", "Mình cảm thấy lo lắng mỗi khi phải đến lớp.",
+            "Mình đã từng chứng kiến bạn khác bị bắt nạt.", "Mình có thầy cô để chia sẻ khi gặp chuyện.",
+            "Mình cảm thấy áp lực phải làm theo ý nhóm bạn.", "Mình tin rằng nhà trường sẽ bảo vệ mình."
+        ];
+        const emojis = ["😠", "😞", "😐", "🙂", "🤩"];
+
+        let messages = []; let mhiScore = 75; let currentUser = null; let surveyResults = [];
+        let currentQIndex = 0; let history = []; let audioCtx, whiteNoiseSource;
+
+        // --- 1. AUTHENTICATION ---
+        function switchAuthTab(t) {
+            document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
+            if(t==='login'){ document.getElementById('form-login').classList.add('active'); } else { document.getElementById('form-register').classList.add('active'); }
+        }
+        function handleRegister() {
+            const u = document.getElementById('regUser').value.trim(), p = document.getElementById('regPass').value.trim(), n = document.getElementById('regName').value.trim(), c = document.getElementById('regClass').value, g = document.getElementById('regGender').value;
+            if(!u||!p||!n||!c) return alert("Nhập đủ thông tin!");
+            const db = JSON.parse(localStorage.getItem('school_db')) || {};
+            if(db[u]) return alert("Tên đăng nhập đã tồn tại!");
+            db[u] = { password:p, profile:{name:n, class:c, gender:g}, surveyDone:false, history:[], riskScore: 0 };
+            localStorage.setItem('school_db', JSON.stringify(db));
+            alert("Đăng ký thành công!"); switchAuthTab('login');
+        }
+        function handleLogin() {
+            const u = document.getElementById('loginUser').value.trim(), p = document.getElementById('loginPass').value.trim();
+            const db = JSON.parse(localStorage.getItem('school_db')) || {};
+            if(!db[u] || db[u].password !== p) return alert("Sai thông tin!");
+            currentUser = db[u]; currentUser.username = u; history = currentUser.history || [];
+            document.getElementById('screen-auth').classList.remove('active');
+            document.getElementById('screen-chat').classList.add('active');
+            document.getElementById('classTitle').innerText = currentUser.profile.class;
+            renderClassMap();
+            if(currentUser.surveyDone) startChatDirectly(); else startSurveyChat();
+        }
+
+        // --- 2. SURVEY & CHAT LOGIC ---
+        function startSurveyChat() {
+            addMessage(`Chào <b>${currentUser.profile.name}</b>! Mình là Kitty AI. Để hiểu bạn hơn, mình xin hỏi 10 câu nhé.`, 'ai');
+            setTimeout(askNextQuestion, 1500);
+        }
+        function askNextQuestion() {
+            if (currentQIndex < questions.length) {
+                addMessage(`<b>Câu ${currentQIndex + 1}:</b> ${questions[currentQIndex]}`, 'ai');
+                toggleInputMode('survey');
+            } else { finishSurvey(); }
+        }
+        function handleSurveyAnswer(val) {
+            surveyResults.push(val);
+            addMessage(emojis[val-1], 'user');
+            document.getElementById('survey-input-mode').classList.remove('active');
+            setTimeout(() => { currentQIndex++; askNextQuestion(); }, 600);
+        }
+        
+        // --- LƯU DỮ LIỆU VÀO CƠ SỞ DỮ LIỆU CHUNG (ĐỂ ADMIN XEM) ---
+        async function finishSurvey() {
+            const db = JSON.parse(localStorage.getItem('school_db'));
+            
+            // Tính điểm rủi ro (Càng cao càng nguy hiểm)
+            // Câu 1,8,10 là tích cực (điểm cao = tốt). Câu 2,3,4,5,6,7,9 là tiêu cực (điểm cao = xấu).
+            let riskScore = 0;
+            for(let i=0; i<10; i++) {
+                if([0, 7, 9].includes(i)) riskScore += (6 - surveyResults[i]); // Đảo ngược điểm câu tích cực
+                else riskScore += surveyResults[i]; // Cộng điểm câu tiêu cực
+            }
+            
+            // Lưu vào DB
+            db[currentUser.username].surveyDone = true;
+            db[currentUser.username].riskScore = riskScore;
+            
+            // Lưu thêm vào "Bảng tổng hợp" dành riêng cho Admin
+            let adminData = JSON.parse(localStorage.getItem('admin_data_all')) || [];
+            adminData.push({
+                name: currentUser.profile.name,
+                class: currentUser.profile.class,
+                gender: currentUser.profile.gender,
+                risk: riskScore,
+                date: new Date().toLocaleDateString(),
+                status: riskScore > 30 ? "Nguy cơ cao" : "Bình thường"
+            });
+            localStorage.setItem('admin_data_all', JSON.stringify(adminData));
+            localStorage.setItem('school_db', JSON.stringify(db));
+            currentUser.surveyDone = true;
+
+            addMessage("Cảm ơn bạn! Đang phân tích...", 'ai');
+            toggleInputMode('text');
+            
+            let surveyText = questions.map((q, i) => `- ${q}: ${surveyResults[i]}/5`).join('\n');
+            const sys = `Bạn là Kitty AI. User: ${currentUser.profile.name}, lớp ${currentUser.profile.class}. Kết quả khảo sát bạo lực: ${surveyText}. Phân tích ngắn gọn. Nếu tiêu cực cao -> An ủi & hỏi nghe nhạc Lofi.`;
+            messages.push({role:"system", content:sys});
+            callAI(sys);
+        }
+
+        function startChatDirectly() {
+            toggleInputMode('text');
+            const sys = `Bạn là Kitty AI. User: ${currentUser.profile.name}. Hỏi thăm "Hôm nay bạn thế nào?".`;
+            messages.push({role:"system", content:sys});
+            callAI("Chào bạn quay lại!");
+        }
+
+        async function handleChat() {
+            const t = document.getElementById('userInput').value.trim();
+            if(!t) return;
+            addMessage(t, 'user'); document.getElementById('userInput').value='';
+            messages.push({role:"user", content:t});
+            callAI();
+        }
+
+        async function callAI(initMsg) {
+            document.getElementById('typingIndicator').style.display='flex';
+            try {
+                if(!initMsg) {
+                    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: "POST", headers: {"Content-Type":"application/json", "Authorization":`Bearer ${API_KEY}`},
+                        body: JSON.stringify({model:"llama-3.3-70b-versatile", messages:messages, temperature:0.7})
+                    });
+                    const data = await res.json();
+                    const txt = data.choices[0].message.content;
+                    document.getElementById('typingIndicator').style.display='none';
+                    messages.push({role:"assistant", content:txt});
+                    processResp(txt);
+                    
+                    // Lưu log chat cho Admin xem (Cảm xúc chính)
+                    let adminData = JSON.parse(localStorage.getItem('admin_data_all')) || [];
+                    // Tìm và update trạng thái cảm xúc gần nhất của học sinh này
+                    let idx = adminData.findIndex(x => x.name === currentUser.profile.name);
+                    if(idx >= 0) {
+                        if(txt.includes("buồn") || txt.includes("lo")) adminData[idx].lastMood = "Buồn/Lo âu";
+                        else if(txt.includes("vui")) adminData[idx].lastMood = "Vui vẻ";
+                        localStorage.setItem('admin_data_all', JSON.stringify(adminData));
+                    }
+
+                } else {
+                    // Lần đầu gọi AI (sau khi login/survey)
+                    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                        method: "POST", headers: {"Content-Type":"application/json", "Authorization":`Bearer ${API_KEY}`},
+                        body: JSON.stringify({model:"llama-3.3-70b-versatile", messages:messages, temperature:0.7})
+                    });
+                    const data = await res.json();
+                    const txt = data.choices[0].message.content;
+                    document.getElementById('typingIndicator').style.display='none';
+                    messages.push({role:"assistant", content:txt});
+                    processResp(txt);
+                }
+            } catch(e) { document.getElementById('typingIndicator').style.display='none'; addMessage("Lỗi: "+e.message, 'ai'); }
+        }
+
+        function processResp(t) {
+            if (t.includes("PLAY_SPOTIFY_NOW")) {
+                addMessage("Oki! Nhạc lên. 🎶", 'ai');
+                let l = (messages.some(m=>m.content.includes("vui")))? LINK_VUI : LINK_LOFI;
+                addMessage(`<iframe style="border-radius:12px; margin-top:10px;" src="${l}" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`, 'ai');
+            } else { addMessage(t.replace(/\*\*/g,''), 'ai'); }
+            const low = t.toLowerCase();
+            if(low.includes('buồn')||low.includes('khóc')) changeTheme('sad');
+            else if(low.includes('vui')) changeTheme('happy');
+        }
+
+        function toggleInputMode(m) {
+            document.getElementById('text-input-mode').classList.remove('active');
+            document.getElementById('survey-input-mode').classList.remove('active');
+            if(m==='survey') document.getElementById('survey-input-mode').classList.add('active');
+            else document.getElementById('text-input-mode').classList.add('active');
+        }
+
+        // EXTRAS
+        function addMessage(h,t){ const b=document.getElementById('chatBox'); const d=document.createElement('div'); d.className=`msg ${t}`; d.innerHTML=h; b.appendChild(d); b.scrollTop=b.scrollHeight; }
+        function changeTheme(e){ document.body.className=''; if(e) document.body.classList.add(`theme-${e}`); }
+        function toggleModal(id){ document.getElementById(id).classList.toggle('active'); }
+        function renderClassMap(){ const g=document.getElementById('classMapGrid'); g.innerHTML=''; for(let i=0; i<19; i++){ let d=document.createElement('div'); d.className='dot-map'; d.style.background=['#00b894','#ff7675','#74b9ff'][Math.floor(Math.random()*3)]; g.appendChild(d); } let me=document.createElement('div'); me.className='dot-map'; me.style.border='2px solid #333'; me.innerText='ME'; g.insertBefore(me, g.firstChild); }
+        
+        // White Noise & Reset
+        function initAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }
+        function playWhiteNoise(){ initAudio(); const b=audioCtx.createBuffer(1, audioCtx.sampleRate*2, audioCtx.sampleRate); const d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; whiteNoiseSource=audioCtx.createBufferSource(); whiteNoiseSource.buffer=b; whiteNoiseSource.loop=true; const g=audioCtx.createGain(); g.gain.value=0.1; whiteNoiseSource.connect(g); g.connect(audioCtx.destination); whiteNoiseSource.start(); }
+        function stopWhiteNoise(){ if(whiteNoiseSource){ whiteNoiseSource.stop(); whiteNoiseSource=null; } }
+        let resetInt;
+        window.activateReset=function(){ document.getElementById('resetOverlay').style.display='flex'; try{playWhiteNoise();}catch(e){} let t=30; resetInt=setInterval(()=>{ t--; document.getElementById('resetCount').innerText=t; if(t<=0) closeReset(); },1000); }
+        window.closeReset=function(){ clearInterval(resetInt); document.getElementById('resetOverlay').style.display='none'; stopWhiteNoise(); addMessage("Mừng quay lại! 🌿", 'ai'); }
+        window.startExercise=function(t){ document.getElementById('therapyModal').classList.remove('active'); addMessage(t==='breath'?"🌬️ Hít 4s - Giữ 7s - Thở 8s":t==='stretch'?"🙆 Nghiêng cổ trái phải 10s":"👁️ Tìm 5 vật nhìn thấy", 'ai'); }
+
+        document.getElementById('userInput').addEventListener("keypress", e=>{if(e.key==="Enter") handleChat()});
+    </script>
+</body>
+</html>
