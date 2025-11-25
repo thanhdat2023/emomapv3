@@ -3,17 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitty AI - Student App</title>
+    <title>Kitty AI - Final Fixed</title>
     <style>
+        /* --- GIAO DIỆN CHUẨN CŨ (GIỮ NGUYÊN) --- */
         :root { --primary: #ff9f43; --bg-color: #fff0e6; --chat-ai: #ffffff; }
         body.theme-sad { --primary: #74b9ff; --bg-color: #f1f7ff; }
         body.theme-stress { --primary: #ff7675; --bg-color: #fff0f0; }
         body.theme-happy { --primary: #00b894; --bg-color: #e6fffa; }
+        body.theme-anxious { --primary: #a29bfe; --bg-color: #f8f0ff; }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: all 0.3s ease; }
         body { background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+
         .app-container { width: 100%; max-width: 450px; height: 95vh; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.15); display: flex; flex-direction: column; position: relative; overflow: hidden; border: 2px solid var(--primary); }
+
         .screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 10; display: none; flex-direction: column; overflow-y: auto; }
         .screen.active { display: flex; animation: fadeIn 0.5s; }
+
+        /* AUTH SCREEN */
         #screen-auth { justify-content: center; align-items: center; padding: 30px; }
         .auth-card { background: white; padding: 30px; border-radius: 20px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 5px solid var(--primary); }
         .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #eee; }
@@ -23,22 +30,30 @@
         .auth-form.active { display: flex; }
         .auth-input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; outline: none; font-size: 1rem; }
         .btn-primary { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+
+        /* CHAT SCREEN */
         #screen-chat { padding: 0; overflow: hidden; }
         .header { padding: 15px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: space-between; z-index: 20; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .avatar-wrapper { width: 40px; height: 40px; }
         .kitty-svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2)); }
+        .logout-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 10px; border-radius: 15px; cursor: pointer; font-size: 0.8rem; }
+
         .chat-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background: rgba(255,255,255,0.6); scroll-behavior: smooth; }
         .msg { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; animation: fadeUp 0.3s ease; }
         .msg.ai { align-self: flex-start; background: var(--chat-ai); color: #333; border-bottom-left-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .msg.user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+
         .typing { display: none; gap: 5px; padding: 10px; margin-left: 10px; background: white; border-radius: 15px; width: fit-content; }
         .dot { width: 6px; height: 6px; background: #ccc; border-radius: 50%; animation: blink 1.4s infinite both; }
         .dot:nth-child(2) { animation-delay: 0.2s; } .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        /* INPUT CONTAINER */
         .input-container { min-height: 80px; background: white; border-top: 1px solid #eee; display: flex; align-items: center; justify-content: center; padding: 5px 10px; position: relative; z-index: 30; }
         #text-input-mode { width: 100%; display: none; gap: 10px; align-items: center; }
         #text-input-mode.active { display: flex; }
         input { flex: 1; padding: 12px; border: 2px solid #eee; border-radius: 20px; outline: none; }
         .send-btn { padding: 10px 15px; background: var(--primary); border: none; border-radius: 50%; color: white; cursor: pointer; font-size: 1rem; }
+
         #survey-input-mode { width: 100%; display: none; justify-content: space-between; padding: 0 5px; }
         #survey-input-mode.active { display: flex; }
         .emoji-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; transition: 0.2s; opacity: 0.5; flex: 1; }
@@ -47,9 +62,12 @@
         .e-text { font-size: 0.6rem; font-weight: bold; color: #888; margin-top: 3px; text-align: center; line-height: 1.1; }
         .emoji-btn:hover .e-icon { filter: grayscale(0%); transform: scale(1.2); }
         .emoji-btn:hover .e-text { color: var(--primary); }
+
+        /* TOOLS */
         .tools-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; background: #fafafa; border-top: 1px solid #eee; padding: 8px 0; }
         .tool-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #888; font-size: 0.75rem; }
         .tool-btn:hover { color: var(--primary); }
+        
         .float-reset { position: absolute; bottom: 130px; right: 15px; width: 45px; height: 45px; background: white; border: 2px solid var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.1); cursor: pointer; z-index: 50; }
         .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 100; display: none; flex-direction: column; padding: 20px; animation: slideUp 0.3s; }
         .modal.active { display: flex; }
@@ -61,6 +79,7 @@
         .dot-map { width: 35px; height: 35px; border-radius: 50%; background: #eee; display: flex; justify-content: center; align-items: center; font-size: 0.6rem; color: white; font-weight: bold; }
         #resetOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #a8e6cf, #dcedc1); z-index: 300; display: none; flex-direction: column; justify-content: center; align-items: center; color: #2d3436; }
         .reset-circle { width: 150px; height: 150px; border: 5px solid white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; font-weight: bold; color: white; animation: breathe 8s infinite; }
+
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -111,7 +130,7 @@
                         <div style="font-size: 0.7rem; opacity: 0.9;" id="statusText">Trợ lý của bạn</div>
                     </div>
                 </div>
-                <div class="mhi-score"><span id="mhiScore">75</span>/100</div>
+                <button class="logout-btn" onclick="handleLogout()">Thoát <i class="fas fa-sign-out-alt"></i></button>
             </div>
             <div class="chat-area" id="chatBox"></div>
             <div class="typing" id="typingIndicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
@@ -148,8 +167,12 @@
         const API_KEY = "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"; 
         // ============================================================
 
-        const LINK_VUI = "https://open.spotify.com/embed/playlist/2s9R059mUf28NY9B2yT2QZ";
-        const LINK_LOFI = "https://open.spotify.com/embed/playlist/0vvXsWCC9xrXsKd4FyS8kM";
+        // --- LINK NHẠC (DẠNG EMBED CHUẨN) ---
+        // Link Playlist Vui (Đã sửa thành embed)
+        const LINK_VUI = "https://open.spotify.com/embed/playlist/4lPLZ0npUWzSpeg0BPOVdp?si=UjYu0QMTTiudxfcW1kPKxg"; 
+        
+        // Link Playlist Lofi/Buồn (Đã sửa thành embed)
+        const LINK_LOFI = "https://open.spotify.com/embed/playlist/0jSMk9A4W6wnFUkfrBuRaG?si=-W7y9Rc6Sxq_k6MhiTugRw"; 
 
         const questions = [
             "Mình cảm thấy an toàn khi ở trường học.", "Mình từng bị ai đó đánh, xô đẩy hoặc làm đau.",
@@ -163,7 +186,7 @@
         let messages = []; let mhiScore = 75; let currentUser = null; let surveyResults = [];
         let currentQIndex = 0; let history = []; let audioCtx, whiteNoiseSource;
 
-        // --- 1. AUTHENTICATION ---
+        // --- AUTHENTICATION ---
         function switchAuthTab(t) {
             document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.auth-form').forEach(f=>f.classList.remove('active'));
             if(t==='login'){ document.getElementById('form-login').classList.add('active'); } else { document.getElementById('form-register').classList.add('active'); }
@@ -188,8 +211,9 @@
             renderClassMap();
             if(currentUser.surveyDone) startChatDirectly(); else startSurveyChat();
         }
+        function handleLogout() { location.reload(); }
 
-        // --- 2. SURVEY & CHAT LOGIC ---
+        // --- SURVEY & CHAT LOGIC ---
         function startSurveyChat() {
             addMessage(`Chào <b>${currentUser.profile.name}</b>! Mình là Kitty AI. Để hiểu bạn hơn, mình xin hỏi 10 câu nhé.`, 'ai');
             setTimeout(askNextQuestion, 1500);
@@ -207,31 +231,20 @@
             setTimeout(() => { currentQIndex++; askNextQuestion(); }, 600);
         }
         
-        // --- LƯU DỮ LIỆU VÀO CƠ SỞ DỮ LIỆU CHUNG (ĐỂ ADMIN XEM) ---
         async function finishSurvey() {
             const db = JSON.parse(localStorage.getItem('school_db'));
-            
-            // Tính điểm rủi ro (Càng cao càng nguy hiểm)
-            // Câu 1,8,10 là tích cực (điểm cao = tốt). Câu 2,3,4,5,6,7,9 là tiêu cực (điểm cao = xấu).
             let riskScore = 0;
             for(let i=0; i<10; i++) {
-                if([0, 7, 9].includes(i)) riskScore += (6 - surveyResults[i]); // Đảo ngược điểm câu tích cực
-                else riskScore += surveyResults[i]; // Cộng điểm câu tiêu cực
+                if([0, 7, 9].includes(i)) riskScore += (6 - surveyResults[i]);
+                else riskScore += surveyResults[i];
             }
-            
-            // Lưu vào DB
             db[currentUser.username].surveyDone = true;
             db[currentUser.username].riskScore = riskScore;
             
-            // Lưu thêm vào "Bảng tổng hợp" dành riêng cho Admin
             let adminData = JSON.parse(localStorage.getItem('admin_data_all')) || [];
             adminData.push({
-                name: currentUser.profile.name,
-                class: currentUser.profile.class,
-                gender: currentUser.profile.gender,
-                risk: riskScore,
-                date: new Date().toLocaleDateString(),
-                status: riskScore > 30 ? "Nguy cơ cao" : "Bình thường"
+                name: currentUser.profile.name, class: currentUser.profile.class, gender: currentUser.profile.gender,
+                risk: riskScore, date: new Date().toLocaleDateString(), status: riskScore > 30 ? "Nguy cơ cao" : "Bình thường"
             });
             localStorage.setItem('admin_data_all', JSON.stringify(adminData));
             localStorage.setItem('school_db', JSON.stringify(db));
@@ -241,14 +254,16 @@
             toggleInputMode('text');
             
             let surveyText = questions.map((q, i) => `- ${q}: ${surveyResults[i]}/5`).join('\n');
-            const sys = `Bạn là Kitty AI. User: ${currentUser.profile.name}, lớp ${currentUser.profile.class}. Kết quả khảo sát bạo lực: ${surveyText}. Phân tích ngắn gọn. Nếu tiêu cực cao -> An ủi & hỏi nghe nhạc Lofi.`;
+            const sys = `Bạn là Kitty AI. User: ${currentUser.profile.name}. Kết quả khảo sát bạo lực: ${surveyText}.
+            Quy tắc: Phân tích ngắn gọn. Nếu tiêu cực -> AN ỦI & hỏi "Cậu có muốn nghe nhạc Lofi không?".`;
             messages.push({role:"system", content:sys});
             callAI(sys);
         }
 
         function startChatDirectly() {
             toggleInputMode('text');
-            const sys = `Bạn là Kitty AI. User: ${currentUser.profile.name}. Hỏi thăm "Hôm nay bạn thế nào?".`;
+            const sys = `Bạn là Kitty AI. User: ${currentUser.profile.name}. Hỏi thăm "Hôm nay bạn thế nào?".
+            Nếu user buồn -> Hỏi nghe nhạc. Nếu user đồng ý nghe -> TRẢ LỜI DUY NHẤT: "PLAY_SPOTIFY_NOW".`;
             messages.push({role:"system", content:sys});
             callAI("Chào bạn quay lại!");
         }
@@ -274,19 +289,7 @@
                     document.getElementById('typingIndicator').style.display='none';
                     messages.push({role:"assistant", content:txt});
                     processResp(txt);
-                    
-                    // Lưu log chat cho Admin xem (Cảm xúc chính)
-                    let adminData = JSON.parse(localStorage.getItem('admin_data_all')) || [];
-                    // Tìm và update trạng thái cảm xúc gần nhất của học sinh này
-                    let idx = adminData.findIndex(x => x.name === currentUser.profile.name);
-                    if(idx >= 0) {
-                        if(txt.includes("buồn") || txt.includes("lo")) adminData[idx].lastMood = "Buồn/Lo âu";
-                        else if(txt.includes("vui")) adminData[idx].lastMood = "Vui vẻ";
-                        localStorage.setItem('admin_data_all', JSON.stringify(adminData));
-                    }
-
                 } else {
-                    // Lần đầu gọi AI (sau khi login/survey)
                     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                         method: "POST", headers: {"Content-Type":"application/json", "Authorization":`Bearer ${API_KEY}`},
                         body: JSON.stringify({model:"llama-3.3-70b-versatile", messages:messages, temperature:0.7})
@@ -300,12 +303,20 @@
             } catch(e) { document.getElementById('typingIndicator').style.display='none'; addMessage("Lỗi: "+e.message, 'ai'); }
         }
 
+        // --- XỬ LÝ NHẠC VÀ LOGIC CŨ (ĐÃ SỬA) ---
         function processResp(t) {
             if (t.includes("PLAY_SPOTIFY_NOW")) {
                 addMessage("Oki! Nhạc lên. 🎶", 'ai');
-                let l = (messages.some(m=>m.content.includes("vui")))? LINK_VUI : LINK_LOFI;
-                addMessage(`<iframe style="border-radius:12px; margin-top:10px;" src="${l}" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`, 'ai');
-            } else { addMessage(t.replace(/\*\*/g,''), 'ai'); }
+                // Logic cũ của bạn: Check ngữ cảnh để chọn nhạc vui/buồn
+                let link = LINK_LOFI; 
+                const context = messages.slice(-3).map(m=>m.content.toLowerCase()).join(" "); // Kiểm tra 3 tin nhắn gần nhất
+                if (context.includes("vui") || context.includes("tuyệt") || context.includes("hạnh phúc")) {
+                    link = LINK_VUI;
+                }
+                addMessage(`<iframe style="border-radius:12px; margin-top:10px;" src="${link}" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`, 'ai');
+            } else { 
+                addMessage(t.replace(/\*\*/g,''), 'ai'); 
+            }
             const low = t.toLowerCase();
             if(low.includes('buồn')||low.includes('khóc')) changeTheme('sad');
             else if(low.includes('vui')) changeTheme('happy');
@@ -324,7 +335,6 @@
         function toggleModal(id){ document.getElementById(id).classList.toggle('active'); }
         function renderClassMap(){ const g=document.getElementById('classMapGrid'); g.innerHTML=''; for(let i=0; i<19; i++){ let d=document.createElement('div'); d.className='dot-map'; d.style.background=['#00b894','#ff7675','#74b9ff'][Math.floor(Math.random()*3)]; g.appendChild(d); } let me=document.createElement('div'); me.className='dot-map'; me.style.border='2px solid #333'; me.innerText='ME'; g.insertBefore(me, g.firstChild); }
         
-        // White Noise & Reset
         function initAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }
         function playWhiteNoise(){ initAudio(); const b=audioCtx.createBuffer(1, audioCtx.sampleRate*2, audioCtx.sampleRate); const d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; whiteNoiseSource=audioCtx.createBufferSource(); whiteNoiseSource.buffer=b; whiteNoiseSource.loop=true; const g=audioCtx.createGain(); g.gain.value=0.1; whiteNoiseSource.connect(g); g.connect(audioCtx.destination); whiteNoiseSource.start(); }
         function stopWhiteNoise(){ if(whiteNoiseSource){ whiteNoiseSource.stop(); whiteNoiseSource=null; } }
