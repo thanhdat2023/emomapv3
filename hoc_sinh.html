@@ -3,151 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitty AI - Final Fix</title>
+    <title>Kitty AI - Psychology Expert</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* --- 1. GIAO DIỆN ĐẸP (GIỮ NGUYÊN) --- */
+        /* --- GIAO DIỆN ĐẸP GIỮ NGUYÊN --- */
         :root {
-            --primary: #ff9f43;
-            --bg-color: #fff0e6;
-            --chat-ai: #ffffff;
-            --chat-text: #333;
-            --shadow: 0 10px 30px rgba(0,0,0,0.1);
-            --modal-bg: rgba(255,255,255,0.95);
+            --primary: #ff9f43; --bg-color: #fff0e6; --chat-ai: #ffffff; --chat-text: #333;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1); --modal-bg: rgba(255,255,255,0.95);
         }
-
         body.dark-mode {
-            --primary: #e67e22;
-            --bg-color: #2d3436;
-            --chat-ai: #636e72;
-            --chat-text: #dfe6e9;
-            --shadow: 0 10px 30px rgba(0,0,0,0.3);
-            --modal-bg: rgba(45, 52, 54, 0.95);
+            --primary: #e67e22; --bg-color: #2d3436; --chat-ai: #636e72; --chat-text: #dfe6e9;
+            --shadow: 0 10px 30px rgba(0,0,0,0.3); --modal-bg: rgba(45, 52, 54, 0.95);
         }
-
         body.theme-sad { --primary: #74b9ff; --bg-color: #f1f7ff; }
-        body.dark-mode.theme-sad { --bg-color: #1e272e; --primary: #0984e3; }
         body.theme-stress { --primary: #ff7675; --bg-color: #fff0f0; }
         body.theme-happy { --primary: #00b894; --bg-color: #e6fffa; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: all 0.3s ease; }
         body { background-color: var(--bg-color); color: var(--chat-text); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
 
-        /* KHUNG APP */
-        .app-container { 
-            width: 100%; max-width: 450px; height: 95vh; 
-            background: rgba(255,255,255,0.75); 
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 30px; 
-            box-shadow: var(--shadow); 
-            display: flex; flex-direction: column; position: relative; 
-            overflow: hidden; border: 2px solid var(--primary); 
-        }
+        .app-container { width: 100%; max-width: 450px; height: 95vh; background: rgba(255,255,255,0.75); backdrop-filter: blur(20px); border-radius: 30px; box-shadow: var(--shadow); display: flex; flex-direction: column; position: relative; overflow: hidden; border: 2px solid var(--primary); }
         body.dark-mode .app-container { background: rgba(45, 52, 54, 0.8); border-color: #555; }
 
-        /* HEADER */
-        .header { 
-            padding: 20px; background: var(--primary); color: white; 
-            display: flex; align-items: center; justify-content: space-between; 
-            z-index: 20; box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
-            border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
-        }
+        .header { padding: 20px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: space-between; z-index: 20; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; }
         .avatar-wrapper { display: flex; align-items: center; gap: 10px; }
         .kitty-icon { font-size: 1.8rem; }
         .theme-btn { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
 
-        /* CHAT AREA */
         .chat-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
-        .msg { max-width: 80%; padding: 12px 18px; border-radius: 20px; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        .msg { max-width: 80%; padding: 12px 18px; border-radius: 20px; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; animation: popIn 0.3s; }
         .msg.ai { align-self: flex-start; background: var(--chat-ai); color: var(--chat-text); border-bottom-left-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .msg.user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 5px; box-shadow: 0 5px 15px rgba(var(--primary), 0.4); }
 
-        /* TYPING */
         .typing { display: none; align-self: flex-start; background: var(--chat-ai); padding: 10px 15px; border-radius: 20px; margin-left: 10px; width: fit-content; margin-bottom: 10px;}
         .dot { display: inline-block; width: 6px; height: 6px; background: #bbb; border-radius: 50%; margin: 0 2px; animation: bounce 1.4s infinite; }
         .dot:nth-child(2) { animation-delay: 0.2s; } .dot:nth-child(3) { animation-delay: 0.4s; }
 
-        /* INPUT AREA */
-        .input-area { 
-            padding: 15px; background: var(--chat-ai); 
-            border-top: 1px solid rgba(0,0,0,0.05); 
-            display: flex; gap: 10px; align-items: center; 
-        }
-        input { 
-            flex: 1; padding: 12px 15px; border: none; 
-            border-radius: 25px; outline: none; background: rgba(0,0,0,0.05); 
-            color: var(--chat-text); font-size: 1rem;
-        }
-        .icon-btn { 
-            width: 45px; height: 45px; border-radius: 50%; border: none; 
-            background: var(--primary); color: white; cursor: pointer; 
-            font-size: 1.1rem; display: flex; justify-content: center; align-items: center;
-            transition: 0.2s;
-        }
+        .input-area { padding: 15px; background: var(--chat-ai); border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 10px; align-items: center; }
+        input { flex: 1; padding: 12px 15px; border: none; border-radius: 25px; outline: none; background: rgba(0,0,0,0.05); color: var(--chat-text); font-size: 1rem; }
+        .icon-btn { width: 45px; height: 45px; border-radius: 50%; border: none; background: var(--primary); color: white; cursor: pointer; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; transition: 0.2s; }
         .icon-btn:hover { transform: scale(1.1); }
         .mic-btn { background: #2ecc71; }
         .mic-btn.listening { animation: pulse 1.5s infinite; background: #e74c3c; }
 
-        /* TOOLS BAR */
-        .tools-bar { 
-            display: grid; grid-template-columns: repeat(3, 1fr); 
-            background: var(--chat-ai); padding-bottom: 10px; padding-top: 5px;
-        }
-        .tool-btn { 
-            background: none; border: none; cursor: pointer; 
-            display: flex; flex-direction: column; align-items: center; gap: 5px; 
-            color: #888; font-size: 0.75rem; transition: 0.2s;
-        }
+        .tools-bar { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--chat-ai); padding-bottom: 10px; padding-top: 5px; }
+        .tool-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; color: #888; font-size: 0.75rem; transition: 0.2s; }
         .tool-btn:hover { color: var(--primary); transform: translateY(-3px); }
         .tool-btn i { font-size: 1.3rem; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 15px; }
 
-        /* RESET BUTTON */
-        .float-reset { 
-            position: absolute; bottom: 160px; right: 20px; 
-            width: 50px; height: 50px; 
-            background: white; border: 2px solid var(--primary); 
-            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
-            color: var(--primary); box-shadow: 0 5px 20px rgba(0,0,0,0.2); 
-            cursor: pointer; z-index: 50; transition: 0.3s; 
-        }
+        .float-reset { position: absolute; bottom: 160px; right: 20px; width: 50px; height: 50px; background: white; border: 2px solid var(--primary); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--primary); box-shadow: 0 5px 20px rgba(0,0,0,0.2); cursor: pointer; z-index: 50; transition: 0.3s; }
         .float-reset:hover { transform: rotate(180deg) scale(1.1); }
 
-        /* MODALS */
-        .modal { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: var(--modal-bg); z-index: 100; 
-            display: none; flex-direction: column; padding: 25px; 
-            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); z-index: 100; display: none; flex-direction: column; padding: 25px; animation: slideUp 0.4s; }
         .modal.active { display: flex; }
         .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; color: var(--primary); font-size: 1.3rem; }
         .close-btn { background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--chat-text); line-height: 1; padding: 0 10px; }
 
-        .therapy-item { 
-            background: rgba(0,0,0,0.03); padding: 15px; border-radius: 15px; 
-            margin-bottom: 15px; border-left: 5px solid var(--primary); 
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .therapy-item { background: rgba(0,0,0,0.03); padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
         .therapy-btn-mini { background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
 
         .map-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 20px; }
         .dot-map { width: 40px; height: 40px; border-radius: 50%; background: #eee; display: flex; justify-content: center; align-items: center; font-size: 0.7rem; color: white; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
-        /* OVERLAYS */
-        #resetOverlay { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: linear-gradient(135deg, #a8e6cf, #dcedc1); z-index: 300; 
-            display: none; flex-direction: column; justify-content: center; align-items: center; 
-            color: #2d3436; animation: fadeIn 0.5s;
-        }
+        #resetOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #a8e6cf, #dcedc1); z-index: 300; display: none; flex-direction: column; justify-content: center; align-items: center; color: #2d3436; animation: fadeIn 0.5s; }
         .reset-circle { width: 180px; height: 180px; border: 8px solid white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 3rem; font-weight: bold; color: white; animation: breathe 8s infinite; }
 
         #sosOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #ff4d4d; z-index: 999; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 20px; animation: pulseRed 2s infinite; }
         .sos-btn { background: white; color: #ff4d4d; border: none; padding: 15px 30px; border-radius: 30px; font-weight: bold; font-size: 1.2rem; margin-top: 20px; cursor: pointer; text-decoration: none; display: inline-block;}
 
-        /* ANIMATIONS */
         @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
@@ -257,13 +182,13 @@
 
     <script>
         // ============================================================
-        // ⚠️ DÁN API KEY GROQ CỦA BẠN VÀO DÂY ⚠️
+        // ⚠️ DÁN API KEY GROQ VÀO ĐÂY (GIỮ NGUYÊN DẤU NGOẶC KÉP)
         const API_KEY = "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"; 
         // ============================================================
 
         const LINK_VUI = "https://open.spotify.com/embed/playlist/4lPLZ0npUWzSpeg0BPOVdp?si=UjYu0QMTTiudxfcW1kPKxg";
         const LINK_LOFI = "https://open.spotify.com/embed/playlist/0jSMk9A4W6wnFUkfrBuRaG?si=-W7y9Rc6Sxq_k6MhiTugRw";
-        const SOS_WORDS = ["tự tử", "muốn chết", "tự sát", "rạch tay", "nhảy lầu", "uống thuốc ngủ", "kết thúc cuộc đời"];
+        const SOS_WORDS = ["tự tử", "muốn chết", "tự sát", "rạch tay", "nhảy lầu"];
 
         let messages = []; 
         let history = JSON.parse(localStorage.getItem('emotionHistory')) || []; 
@@ -280,13 +205,22 @@
             addMessage(greeting, 'ai');
             document.getElementById('statusText').innerText = "Groq AI Online ⚡";
             
-            // Cấu hình não AI
+            // CẤU HÌNH NÃO AI SIÊU CẤP
             const systemPrompt = `
-                Bạn là Kitty AI, chuyên gia tâm lý học đường.
-                QUY TẮC CỐT LÕI:
-                1. Nếu user có vẻ buồn/stress -> An ủi và hỏi: "Cậu có muốn nghe nhạc Lofi không?".
-                2. Nếu user ĐỒNG Ý nghe nhạc (ok, có, nghe, uhm...) -> CHỈ TRẢ LỜI CHÍNH XÁC CỤM TỪ: "PLAY_SPOTIFY_NOW". KHÔNG ĐƯỢC GIẢI THÍCH GÌ THÊM.
-                3. Các trường hợp khác: Tư vấn tâm lý ngắn gọn, ấm áp.
+                Bạn là Kitty AI, một nhà tâm lý học lỗi lạc.
+                NHIỆM VỤ PHÂN TÍCH CHUYÊN SÂU:
+                1. 🧬 **Emotion DNA:** Xác định "mã gen cảm xúc" của người dùng (Nhạy cảm/Kiên cường/Dễ tổn thương).
+                2. 🧠 **Fake Emotion Radar:** Phát hiện sự mâu thuẫn giữa lời nói "Mình ổn" và giọng văn buồn bã.
+                3. ⏳ **Emotion Forecasting:** Dự báo: "Nếu tiếp tục suy nghĩ này, khả năng cao bạn sẽ bị burnout trong 2 ngày tới."
+                4. 🧩 **Cognitive Distortion:** Chỉ ra lỗi tư duy (Ví dụ: "Bạn đang tư duy trắng-đen, sự thật không tệ như vậy").
+                5. 🪞 **Emotion Mirror:** "Nếu mình là bạn, mình cũng sẽ cảm thấy bất lực."
+                6. 🛑 **Burnout Scanner:** Cảnh báo nếu thấy dấu hiệu kiệt sức cảm xúc.
+
+                QUY TẮC HÀNH XỬ:
+                - Nếu chỉ chào hỏi -> Chào lại thân thiện.
+                - Nếu NGHE TỪ KHÓA BUỒN/STRESS -> Phân tích nhẹ nhàng rồi hỏi: "Cậu có muốn nghe nhạc Lofi để thư giãn không?".
+                - Nếu USER ĐỒNG Ý NGHE NHẠC -> CHỈ TRẢ LỜI DUY NHẤT CỤM TỪ: "PLAY_SPOTIFY_NOW".
+                - Giọng văn: Ấm áp, thấu hiểu, chuyên nghiệp nhưng gần gũi.
             `;
 
             messages.push({ role: "system", content: systemPrompt });
@@ -348,7 +282,6 @@
         function processResponse(text, userText) {
             if (text.includes("PLAY_SPOTIFY_NOW")) {
                 addMessage("Oki! Nhạc lên ngay đây. 🎶", 'ai');
-                
                 const t = userText.toLowerCase();
                 let link = LINK_LOFI; 
                 if (t.includes("vui") || t.includes("tuyệt") || t.includes("hạnh phúc")) link = LINK_VUI;
@@ -367,7 +300,7 @@
             saveHistory(userText, score);
         }
 
-        // --- CÁC HÀM PHỤ TRỢ ---
+        // --- CÁC HÀM PHỤ TRỢ (GLOBAL SCOPE) ---
         function addMessage(html, type) {
             const box = document.getElementById('chatBox');
             const div = document.createElement('div');
@@ -377,11 +310,8 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        // --- HÀM MỞ/ĐÓNG MODAL (ĐÃ SỬA LỖI) ---
         function openModal(id) {
-            // Đóng các modal khác trước
             document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-            // Mở modal này
             const m = document.getElementById(id);
             if(m) {
                 m.classList.add('active');
@@ -392,22 +322,6 @@
         function closeModal(id) {
             const m = document.getElementById(id);
             if(m) m.classList.remove('active');
-        }
-
-        // --- TÍNH NĂNG TRỊ LIỆU (ĐÃ SỬA LỖI HIỆN CHỮ "ai") ---
-        function startExercise(type) {
-            closeModal('therapyModal'); // Đóng modal trước
-            
-            let content = "";
-            if (type === 'breath') {
-                content = `<b>🌬️ Bài tập Hít thở 4-7-8:</b><br>1. Hít vào mũi (4s)<br>2. Nín thở (7s)<br>3. Thở ra miệng (8s)<br><i>Lặp lại 4 lần nhé!</i>`;
-            } else if (type === 'stretch') {
-                content = `<b>🙆 Thư giãn Cổ & Vai:</b><br>1. Nghiêng đầu sang trái (giữ 10s)<br>2. Nghiêng sang phải (giữ 10s)<br>3. Xoay vai ra sau 5 lần.`;
-            } else if (type === 'grounding') {
-                content = `<b>👁️ Kỹ thuật 5-4-3-2-1:</b><br>👀 Tìm 5 vật bạn thấy<br>✋ Tìm 4 vật bạn chạm được<br>👂 Tìm 3 âm thanh bạn nghe<br>👃 Tìm 2 mùi hương<br>👅 Tìm 1 vị bạn cảm nhận`;
-            }
-
-            addMessage(content, 'ai');
         }
 
         function changeTheme(e) { document.body.className = ''; if(e) document.body.classList.add(`theme-${e}`); checkDarkMode(); }
@@ -469,6 +383,10 @@
         let resetInt;
         window.activateReset=function(){ document.getElementById('resetOverlay').style.display='flex'; try{playWhiteNoise();}catch(e){} let t=30; resetInt=setInterval(()=>{ t--; document.getElementById('resetCount').innerText=t; if(t<=0) closeReset(); },1000); }
         window.closeReset=function(){ clearInterval(resetInt); document.getElementById('resetOverlay').style.display='none'; stopWhiteNoise(); addMessage("Chào mừng cậu quay lại! 🌿", 'ai'); }
+        window.startExercise=function(t){ 
+            closeModal('therapyModal');
+            addMessage(t==='breath'?"🌬️ <b>Hít thở:</b> Hít 4s - Giữ 7s - Thở 8s.":(t==='stretch'?"🙆 <b>Cổ vai:</b> Nghiêng trái phải 10s.":"👁️ <b>5-4-3-2-1:</b> Tìm 5 vật nhìn thấy", 'ai')); 
+        }
 
         // Bắt phím Enter
         document.getElementById('userInput').addEventListener("keypress", e=>{if(e.key==="Enter") handleChat()});
