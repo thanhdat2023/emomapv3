@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EmoMap AI - Ultimate Final</title>
+    <title>EmoMap - Final Perfect Version</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -12,6 +12,14 @@
         :root { --primary: #ff9f43; --bg-color: #fff0e6; --chat-ai: #ffffff; --chat-text: #333; --shadow: 0 10px 30px rgba(0,0,0,0.1); --modal-bg: rgba(255,255,255,0.95); }
         body.dark-mode { --primary: #e67e22; --bg-color: #2d3436; --chat-ai: #636e72; --chat-text: #dfe6e9; --shadow: 0 10px 30px rgba(0,0,0,0.3); --modal-bg: rgba(45, 52, 54, 0.95); }
         
+        /* THEME CẢM XÚC */
+        body.theme-sad { --primary: #74b9ff; --bg-color: #f1f7ff; }
+        body.dark-mode.theme-sad { --bg-color: #1e272e; --primary: #0984e3; }
+        body.theme-stress { --primary: #ff7675; --bg-color: #fff0f0; }
+        body.dark-mode.theme-stress { --bg-color: #2c0b0e; --primary: #d63031; }
+        body.theme-happy { --primary: #00b894; --bg-color: #e6fffa; }
+        body.dark-mode.theme-happy { --bg-color: #0c2520; --primary: #00b894; }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: background 0.3s, color 0.3s; }
         body { background-color: var(--bg-color); color: var(--chat-text); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
 
@@ -30,61 +38,51 @@
         .typing { display: none; align-self: flex-start; background: var(--chat-ai); padding: 10px; border-radius: 20px; margin-left: 10px; width: fit-content; }
         .dot { display: inline-block; width: 6px; height: 6px; background: #bbb; border-radius: 50%; margin: 0 2px; animation: bounce 1.4s infinite; }
         
-        /* INPUT AREA (ĐÃ SỬA: THÊM NÚT RESET VÀO ĐÂY) */
-        .input-area { padding: 15px; background: var(--chat-ai); border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 8px; align-items: center; }
+        /* INPUT AREA */
+        .input-area { padding: 15px; background: var(--chat-ai); border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 8px; align-items: center; position: relative; z-index: 30; }
         input { flex: 1; padding: 12px; border: none; border-radius: 25px; outline: none; background: rgba(0,0,0,0.05); color: var(--chat-text); }
         
-        .icon-btn { width: 42px; height: 42px; border-radius: 50%; border: none; background: var(--primary); color: white; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; font-size: 1rem; }
+        .icon-btn { width: 45px; height: 45px; border-radius: 50%; border: none; background: var(--primary); color: white; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; font-size: 1.1rem; }
         .icon-btn:hover { transform: scale(1.1); }
-        
-        .reset-btn { background: #ff7675; } /* Nút Reset màu đỏ nhạt */
-        .mic-btn { background: #2ecc71; } /* Nút Mic màu xanh */
+        .mic-btn { background: #2ecc71; } 
         .mic-btn.listening { animation: pulse 1s infinite; background: #e74c3c; }
 
-        /* TOOLS BAR (CHỈ CÒN 4 MỤC) */
-        .tools-bar { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--chat-ai); padding: 10px 0; }
+        /* NÚT RESET LƠ LỬNG (ĐÃ SỬA VỊ TRÍ CAO HƠN) */
+        .float-reset { 
+            position: absolute; 
+            bottom: 130px; /* Cao hẳn lên để không đè nút gửi */
+            right: 20px; 
+            width: 50px; height: 50px; 
+            background: white; border: 2px solid var(--primary); border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; 
+            color: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+            cursor: pointer; z-index: 50; transition: 0.3s; 
+        }
+        .float-reset:hover { transform: rotate(180deg) scale(1.1); }
+
+        /* TOOLS BAR */
+        .tools-bar { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--chat-ai); padding: 10px 0; z-index: 30; }
         .tool-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; color: #888; font-size: 0.7rem; }
         .tool-btn:hover { color: var(--primary); transform: translateY(-3px); }
         .tool-btn i { font-size: 1.2rem; background: rgba(0,0,0,0.05); padding: 8px; border-radius: 12px; }
 
         /* MODALS */
-        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); z-index: 100; display: none; flex-direction: column; padding: 20px; animation: slideUp 0.3s; }
+        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); z-index: 100; display: none; flex-direction: column; padding: 20px; animation: slideUp 0.3s; overflow-y: auto; }
         .modal.active { display: flex; }
         .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; color: var(--primary); font-size: 1.3rem; }
         .close-btn { background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--chat-text); padding: 0 10px; }
 
         /* --- GAME STYLE --- */
-        #gameCanvas { 
-            background: #202c3c; 
-            border-radius: 15px; margin: 0 auto; display: block; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            touch-action: none;
-            transition: background-color 0.5s ease;
-        }
+        #gameCanvas { background: #202c3c; border-radius: 15px; margin: 0 auto; display: block; box-shadow: 0 10px 30px rgba(0,0,0,0.4); touch-action: none; transition: background-color 0.5s ease; }
         .game-header-info { display: flex; justify-content: space-between; margin-bottom: 15px; color: white; font-weight: bold; }
         .score-box { background: #ff9f43; color:white; padding: 5px 15px; border-radius: 20px; box-shadow: 0 4px 0 #e67e22; display: flex; flex-direction: column; align-items: center; min-width: 100px;}
         .score-label { font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; }
         .score-val { font-size: 1.2rem; }
         .best-score-box { background: #f1c40f; box-shadow: 0 4px 0 #d4ac0d; }
-
-        .preview-container {
-            display: flex; justify-content: space-around; margin-top: 20px;
-            background: rgba(0,0,0,0.05); padding: 10px; border-radius: 15px;
-        }
+        .preview-container { display: flex; justify-content: space-around; margin-top: 20px; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 15px; }
         .preview-canvas { width: 80px; height: 80px; background: transparent; touch-action: none; }
-
-        #gameOverOverlay {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9); color: white; padding: 30px;
-            border-radius: 20px; text-align: center; z-index: 200;
-            display: none; animation: popIn 0.5s; border: 3px solid #ff9f43; width: 80%;
-        }
-        .restart-btn {
-            background: linear-gradient(to bottom, #ff9f43, #e67e22);
-            color: white; border: none; padding: 12px 30px;
-            border-radius: 25px; font-size: 1.1rem; font-weight: bold;
-            cursor: pointer; margin-top: 20px; box-shadow: 0 5px 0 #d35400; 
-        }
+        #gameOverOverlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); color: white; padding: 30px; border-radius: 20px; text-align: center; z-index: 200; display: none; animation: popIn 0.5s; border: 3px solid #ff9f43; width: 80%; }
+        .restart-btn { background: linear-gradient(to bottom, #ff9f43, #e67e22); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 5px 0 #d35400; }
         .restart-btn:active { transform: translateY(5px); box-shadow: none; }
 
         /* OTHER STYLES */
@@ -98,7 +96,6 @@
         #sosOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #ff4d4d; z-index: 999; display: none; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 20px; animation: pulseRed 2s infinite; }
         .sos-btn { background: white; color: #ff4d4d; border: none; padding: 15px 30px; border-radius: 30px; font-weight: bold; font-size: 1.2rem; margin-top: 20px; cursor: pointer; text-decoration: none; display: inline-block;}
         
-        /* POPUP HỌC SINH */
         .student-popup { position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%); width: 90%; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 50; display: none; animation: popIn 0.3s; text-align: center; border: 2px solid var(--primary); }
         .student-popup.active { display: block; }
         .send-love-btn { background: #ff7675; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 5px; margin: 0 auto; }
@@ -125,7 +122,7 @@
             <div class="avatar-wrapper">
                 <i class="fas fa-cat kitty-icon"></i>
                 <div style="margin-left: 10px;">
-                    <div style="font-weight: bold; font-size: 1.1rem;">EmoMap AI</div>
+                    <div style="font-weight: bold; font-size: 1.1rem;">EmoMap</div>
                     <div style="font-size: 0.75rem; opacity: 0.9;" id="statusText">Trợ lý cảm xúc</div>
                 </div>
             </div>
@@ -135,20 +132,13 @@
         <div class="chat-area" id="chatBox"></div>
         <div class="typing" id="typingIndicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
         
+        <div class="float-reset" onclick="activateReset()" title="Reset Tâm Trí">
+            <i class="fas fa-leaf"></i> </div>
+
         <div class="input-area">
             <input type="text" id="userInput" placeholder="Nhắn tin..." autocomplete="off">
-            
-            <button class="icon-btn reset-btn" onclick="activateReset()" title="Reset Tâm Trí">
-                <i class="fas fa-redo"></i>
-            </button>
-
-            <button class="icon-btn mic-btn" id="voiceBtn" onclick="startDictation()">
-                <i class="fas fa-microphone"></i>
-            </button>
-
-            <button class="icon-btn" onclick="handleChat()">
-                <i class="fas fa-paper-plane"></i>
-            </button>
+            <button class="icon-btn mic-btn" id="voiceBtn" onclick="startDictation()"><i class="fas fa-microphone"></i></button>
+            <button class="icon-btn" onclick="handleChat()"><i class="fas fa-paper-plane"></i></button>
         </div>
 
         <div class="tools-bar">
@@ -182,11 +172,18 @@
         
         <div class="modal" id="mapModal">
             <div class="modal-header"><span>❤️ Mạng Lưới Cảm Xúc</span><button class="close-btn" onclick="closeModal('mapModal')">×</button></div>
-            <div class="map-grid" id="classMapGrid"></div>
-            <div class="student-popup" id="studentPopup">
-                <div class="popup-name" id="popupName">Bạn bàn 3</div>
-                <div class="popup-status" id="popupStatus">"Đang hơi mệt..."</div>
-                <button class="send-love-btn" onclick="sendLove()"><i class="fas fa-heart"></i> Gửi năng lượng</button>
+            <div class="map-container">
+                <div class="map-stats">
+                    <div class="stat-item"><span class="stat-val" style="color:#00b894">60%</span>Vui vẻ</div>
+                    <div class="stat-item"><span class="stat-val" style="color:#ff7675">15%</span>Stress</div>
+                    <div class="stat-item"><span class="stat-val" style="color:#74b9ff">25%</span>Buồn</div>
+                </div>
+                <div class="map-grid" id="classMapGrid"></div>
+                <div class="student-popup" id="studentPopup">
+                    <div class="popup-name" id="popupName">Bạn bàn 3</div>
+                    <div class="popup-status" id="popupStatus">"Đang hơi mệt..."</div>
+                    <button class="send-love-btn" onclick="sendLove()"><i class="fas fa-heart"></i> Gửi năng lượng</button>
+                </div>
             </div>
         </div>
         
@@ -208,6 +205,7 @@
 
         const LINK_VUI = "https://open.spotify.com/embed/playlist/4lPLZ0npUWzSpeg0BPOVdp?si=UjYu0QMTTiudxfcW1kPKxg";
         const LINK_LOFI = "https://open.spotify.com/embed/playlist/0jSMk9A4W6wnFUkfrBuRaG?si=-W7y9Rc6Sxq_k6MhiTugRw";
+        const SOS_WORDS = ["tự tử", "muốn chết", "tự sát", "rạch tay", "nhảy lầu"];
 
         let messages = []; 
         let history = JSON.parse(localStorage.getItem('emotionHistory')) || []; 
@@ -247,9 +245,7 @@
         // --- GAME ENGINE (BLOCK BLAST) ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const GRID_ROWS = 8; const GRID_COLS = 8;
-        const CELL_SIZE = 40;
-        const GRID_OFFSET_X = 15; const GRID_OFFSET_Y = 30;
+        const GRID_ROWS = 8; const GRID_COLS = 8; const CELL_SIZE = 40; const GRID_OFFSET_X = 15; const GRID_OFFSET_Y = 30;
         const COLORS = ['#FFD700', '#FF4757', '#2ED573', '#1E90FF', '#FFA502', '#9b59b6', '#3498db'];
 
         let board = Array(GRID_ROWS).fill().map(() => Array(GRID_COLS).fill(0));
@@ -259,11 +255,11 @@
         let particles = []; let floatingTexts = []; let score = 0; let bestScore = localStorage.getItem('blockBlastBestScore') || 0;
         let isGameOver = false; let draggingShape = null;
         let cleanBoardTimer = 0; let gameLoopId;
+        let comboCount = 0;
 
-        const SHAPE_TEMPLATES = [
-            { m: [[1]], c: 0 }, { m: [[1,1],[1,1]], c: 1 }, { m: [[1,1,1]], c: 2 }, { m: [[1],[1],[1]], c: 3 },
-            { m: [[1,1],[1,0]], c: 4 }, { m: [[1,1,1],[0,1,0]], c: 0 }, { m: [[1,1,0],[0,1,1]], c: 1 }
-        ];
+        const SHAPES_EASY = [ { m: [[1]], c: 0 }, { m: [[1,1]], c: 1 }, { m: [[1],[1]], c: 1 }, { m: [[1,1],[1,1]], c: 3 } ];
+        const SHAPES_MEDIUM = [ { m: [[1,1,1]], c: 2 }, { m: [[1],[1],[1]], c: 2 }, { m: [[1,1,1],[0,1,0]], c: 4 }, { m: [[0,1,0],[1,1,1]], c: 4 }, { m: [[1,0],[1,1],[1,0]], c: 4 }, { m: [[0,1],[1,1],[0,1]], c: 4 } ];
+        const SHAPES_HARD = [ { m: [[1,1,0],[0,1,1]], c: 5 }, { m: [[0,1,1],[1,1,0]], c: 5 }, { m: [[1,0,0],[1,1,1]], c: 6 }, { m: [[1,1,1],[0,0,1]], c: 6 }, { m: [[1,1,1,1]], c: 6 } ];
 
         function initGameEngine() {
             if (canvas.width === 0) { canvas.width = 350; canvas.height = 380; }
@@ -288,10 +284,20 @@
             }
         }
 
+        function getSmartShape() {
+            let filledCount = board.flat().filter(c => c !== 0).length;
+            let fillRatio = filledCount / (GRID_ROWS * GRID_COLS);
+            let pool;
+            if (fillRatio > 0.65) pool = Math.random() < 0.8 ? SHAPES_EASY : SHAPES_MEDIUM;
+            else if (fillRatio < 0.1) pool = Math.random() < 0.4 ? SHAPES_MEDIUM : SHAPES_HARD;
+            else { let r = Math.random(); if (r < 0.3) pool = SHAPES_EASY; else if (r < 0.7) pool = SHAPES_MEDIUM; else pool = SHAPES_HARD; }
+            return pool[Math.floor(Math.random() * pool.length)];
+        }
+
         function spawnShapes() {
             for(let i=0; i<3; i++) {
                 if(previewShapes[i] === null) {
-                    const t = SHAPE_TEMPLATES[Math.floor(Math.random() * SHAPE_TEMPLATES.length)];
+                    const t = getSmartShape();
                     previewShapes[i] = { matrix: t.m, color: COLORS[t.c % COLORS.length], id: i };
                 }
             }
@@ -401,12 +407,19 @@
             let totalLines = rowsToClear.length + colsToClear.length;
 
             if(totalLines > 0) {
+                comboCount++;
                 canvas.style.animation = 'none'; canvas.offsetHeight; canvas.style.animation = 'shake 0.3s';
+                
                 rowsToClear.forEach(r => { for(let c=0; c<GRID_COLS; c++) { createParticles(c, r, board[r][c]); board[r][c] = 0; } });
                 colsToClear.forEach(c => { for(let r=0; r<GRID_ROWS; r++) { createParticles(c, r, board[r][c]); board[r][c] = 0; } });
-                let baseLineScore = 100; let multiLineMultiplier = totalLines === 1 ? 1 : (totalLines === 2 ? 2 : (totalLines === 3 ? 4 : 8));
-                addScore(totalLines * baseLineScore * multiLineMultiplier, canvas.width/2, canvas.height/2, true);
+
+                let baseLineScore = 100;
+                let multiLineMultiplier = totalLines === 1 ? 1 : (totalLines === 2 ? 2 : (totalLines === 3 ? 4 : 8));
+                let comboMultiplier = comboCount;
                 
+                addScore((totalLines * baseLineScore * multiLineMultiplier * comboMultiplier), canvas.width/2, canvas.height/2, true);
+                
+                if(comboCount > 1) floatingTexts.push({x: canvas.width/2, y: 230, text: `Combo x${comboCount}!`, life: 1.5, color: '#f1c40f', font: 'bold 20px Arial'});
                 if(totalLines > 1) floatingTexts.push({x: canvas.width/2, y: 200, text: totalLines > 2 ? "AMAZING!" : "DOUBLE!", life: 1.5, color: '#f1c40f', font: 'bold 28px Arial'});
                 
                 if(isBoardEmpty()) {
@@ -414,6 +427,8 @@
                     floatingTexts.push({x: canvas.width/2, y: 150, text: "PERFECT CLEAR!", life: 2.0, color: '#00ff00', font: 'bold 30px Arial'});
                     addScore(500, canvas.width/2, 250, true);
                 }
+            } else {
+                comboCount = 0; 
             }
         }
 
@@ -421,7 +436,7 @@
         function createParticles(c, r, color) { let x = GRID_OFFSET_X + c*CELL_SIZE + CELL_SIZE/2; let y = GRID_OFFSET_Y + r*CELL_SIZE + CELL_SIZE/2; for(let i=0; i<8; i++) particles.push({ x: x, y: y, vx: (Math.random()-0.5)*8, vy: (Math.random()-0.5)*8, life: 1.0, color: color, size: Math.random()*8+4 }); }
         function addScore(val, x, y, isMajor) { score += val; document.getElementById('scoreVal').innerText = score; if(score > bestScore) { bestScore = score; localStorage.setItem('blockBlastBestScore', bestScore); document.getElementById('bestScoreVal').innerText = bestScore; } floatingTexts.push({ x: x, y: y, text: "+" + val, life: 1.0, font: isMajor ? 'bold 32px Arial' : 'bold 20px Arial', color: isMajor ? '#FFD700' : 'white' }); }
         function checkGameOver() { if(isGameOver) return; let canPlaceAny = false; for(let i=0; i<3; i++) { if(previewShapes[i]) { for(let r=0; r<GRID_ROWS; r++) { for(let c=0; c<GRID_COLS; c++) { if(canPlace(previewShapes[i].matrix, r, c)) { canPlaceAny = true; break; } } if(canPlaceAny) break; } } if(canPlaceAny) break; } if(!canPlaceAny && previewShapes.some(s => s !== null)) { isGameOver = true; document.getElementById('finalScore').innerText = score; document.getElementById('gameOverOverlay').style.display = 'block'; } }
-        function resetGame() { board = Array(GRID_ROWS).fill().map(() => Array(GRID_COLS).fill(0)); score = 0; isGameOver = false; document.getElementById('scoreVal').innerText = 0; document.getElementById('gameOverOverlay').style.display = 'none'; previewShapes = [null, null, null]; spawnShapes(); }
+        function resetGame() { board = Array(GRID_ROWS).fill().map(() => Array(GRID_COLS).fill(0)); score = 0; comboCount = 0; isGameOver = false; document.getElementById('scoreVal').innerText = 0; document.getElementById('gameOverOverlay').style.display = 'none'; previewShapes = [null, null, null]; spawnShapes(); }
         
         function handleInputStart(e) {}
         function handleStart(e, index) {
@@ -468,32 +483,46 @@
         function addMessage(h,t){ const b=document.getElementById('chatBox'); const d=document.createElement('div'); d.className=`msg ${t}`; d.innerHTML=h; b.appendChild(d); b.scrollTop=b.scrollHeight; }
         function openModal(id) { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); const m = document.getElementById(id); if(m) { m.classList.add('active'); if(id === 'statsModal') renderChart(); if(id === 'gameModal') initGameEngine(); } }
         function closeModal(id) { const m = document.getElementById(id); if(m) m.classList.remove('active'); }
+        function changeTheme(e){ document.body.className=''; if(e) document.body.classList.add(`theme-${e}`); checkDarkMode(); } 
         function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('kitty_darkMode', document.body.classList.contains('dark-mode')); document.querySelector('.theme-btn i').className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon'; }
-        function checkDarkMode() { if(localStorage.getItem('kitty_darkMode') === 'true') toggleDarkMode(); }
+        function checkDarkMode() { if(localStorage.getItem('kitty_darkMode') === 'true') { document.body.classList.add('dark-mode'); document.querySelector('.theme-btn i').className = 'fas fa-sun'; } }
         function startDictation() { if (window.hasOwnProperty('webkitSpeechRecognition')) { var recognition = new webkitSpeechRecognition(); recognition.lang = "vi-VN"; const btn = document.getElementById('voiceBtn'); btn.classList.add('listening'); recognition.start(); recognition.onresult = function(e) { document.getElementById('userInput').value = e.results[0][0].transcript; recognition.stop(); btn.classList.remove('listening'); }; } else { alert("Dùng Chrome để nói."); } }
         function saveHistory(text, score) { history.push({ time: new Date().toLocaleTimeString(), text: text, score: score }); if(history.length > 20) history.shift(); localStorage.setItem('emotionHistory', JSON.stringify(history)); }
         function renderChart() { const ctx = document.getElementById('emotionChart').getContext('2d'); if(myChart) myChart.destroy(); myChart = new Chart(ctx, { type: 'line', data: { labels: history.map(h => h.time), datasets: [{ label: 'Cảm xúc', data: history.map(h => h.score), borderColor: '#ff9f43', backgroundColor: 'rgba(255, 159, 67, 0.2)', tension: 0.4, fill: true }] } }); }
+        
+        // --- EMPATHY MAP ---
         function renderClassMap(){ const g=document.getElementById('classMapGrid'); g.innerHTML=''; 
-            for(let i=0; i<19; i++){ let d=document.createElement('div'); d.className='dot-map'; 
-            d.style.background=['#00b894','#ff7675','#74b9ff'][Math.floor(Math.random()*3)]; 
-            d.onclick = () => showStudentInfo(i+1);
-            g.appendChild(d); } 
+            const moods = ['happy', 'sad', 'stress']; const status = ["Đang vui vẻ 🌻", "Hơi buồn... 🌧️", "Áp lực quá 🤯"];
+            for(let i=0; i<19; i++){ 
+                let r = Math.floor(Math.random()*3);
+                let d=document.createElement('div'); d.className=`student-seat seat-${moods[r]}`; d.innerText=i+1;
+                d.onclick = () => {
+                    document.getElementById('popupName').innerText=`Bạn bàn ${i+1}`;
+                    document.getElementById('popupStatus').innerText=`"${status[r]}"`;
+                    document.getElementById('studentPopup').classList.add('active');
+                };
+                g.appendChild(d); 
+            } 
+            let me = document.createElement('div'); me.className='student-seat seat-me'; me.innerText='Me'; g.insertBefore(me, g.firstChild);
         }
-        function showStudentInfo(id) { 
-            const pop = document.getElementById('studentPopup'); 
-            document.getElementById('popupName').innerText=`Bạn bàn ${id}`; 
-            pop.classList.add('active'); 
+        function sendLove(){ 
+            document.getElementById('studentPopup').classList.remove('active'); 
+            const m = document.getElementById('mapModal');
+            for(let i=0;i<5;i++) {
+                let h=document.createElement('div'); h.className='floating-heart'; h.innerHTML='💖';
+                h.style.left = Math.random()*80+10+'%'; h.style.bottom='100px';
+                m.appendChild(h); setTimeout(()=>h.remove(), 1500);
+            }
         }
-        function sendLove(){ document.getElementById('studentPopup').classList.remove('active'); alert("Đã gửi tim! ❤️"); }
+        
         function initAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }
         function playWhiteNoise(){ initAudio(); const b=audioCtx.createBuffer(1, audioCtx.sampleRate*2, audioCtx.sampleRate); const d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; whiteNoiseSource=audioCtx.createBufferSource(); whiteNoiseSource.buffer=b; whiteNoiseSource.loop=true; const g=audioCtx.createGain(); g.gain.value=0.1; whiteNoiseSource.connect(g); g.connect(audioCtx.destination); whiteNoiseSource.start(); }
         function stopWhiteNoise(){ if(whiteNoiseSource){ whiteNoiseSource.stop(); whiteNoiseSource=null; } }
         let resetInt;
         window.activateReset=function(){ document.getElementById('resetOverlay').style.display='flex'; try{playWhiteNoise();}catch(e){} let t=30; resetInt=setInterval(()=>{ t--; document.getElementById('resetCount').innerText=t; if(t<=0) closeReset(); },1000); }
         window.closeReset=function(){ clearInterval(resetInt); document.getElementById('resetOverlay').style.display='none'; stopWhiteNoise(); addMessage("Chào mừng cậu quay lại! 🌿", 'ai'); }
-        window.startExercise=function(t){ closeModal('therapyModal'); addMessage(t==='breath'?"🌬️ Hít 4s - Giữ 7s - Thở 8s":t==='stretch'?"🙆 Nghiêng đầu 10s":"👁️ Tìm 5 vật nhìn thấy", 'ai'); }
+        window.startExercise=function(t){ closeModal('therapyModal'); addMessage(t==='breath'?"🌬️ <b>Hít thở:</b> Hít 4s - Giữ 7s - Thở 8s.":(t==='stretch'?"🙆 <b>Cổ vai:</b> Nghiêng đầu 10s.":"👁️ <b>5-4-3-2-1:</b> Tìm 5 vật nhìn thấy", 'ai')); }
         document.getElementById('userInput').addEventListener("keypress", e=>{if(e.key==="Enter") handleChat()});
     </script>
 </body>
 </html>
-
