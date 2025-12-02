@@ -2,13 +2,13 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EmoMap - Mobile Perfect</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitty AI - The Final One</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* --- 1. GIAO DIỆN CHUNG --- */
+        /* --- 1. GIAO DIỆN ĐẸP (ULTIMATE UI) --- */
         :root { --primary: #ff9f43; --bg-color: #fff0e6; --chat-ai: #ffffff; --chat-text: #333; --shadow: 0 10px 30px rgba(0,0,0,0.1); --modal-bg: rgba(255,255,255,0.98); }
         body.dark-mode { --primary: #e67e22; --bg-color: #2d3436; --chat-ai: #636e72; --chat-text: #dfe6e9; --shadow: 0 10px 30px rgba(0,0,0,0.3); --modal-bg: rgba(45, 52, 54, 0.98); }
         
@@ -17,44 +17,36 @@
         body.theme-happy { --primary: #00b894; --bg-color: #e6fffa; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: background 0.3s, color 0.3s; }
-        body { background-color: var(--bg-color); color: var(--chat-text); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; touch-action: none; /* Chặn cuộn toàn trang */ }
+        body { background-color: var(--bg-color); color: var(--chat-text); display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
 
         /* KHUNG APP */
         .app-container { 
-            width: 100%; max-width: 450px; height: 100%; /* Full màn hình mobile */
+            width: 100%; max-width: 450px; height: 95vh; 
             background: rgba(255,255,255,0.85); 
-            backdrop-filter: blur(20px); 
+            backdrop-filter: blur(20px); border-radius: 30px; 
             box-shadow: var(--shadow); 
             display: flex; flex-direction: column; position: relative; 
             overflow: hidden; border: 2px solid var(--primary); 
         }
-        @media (min-width: 450px) { .app-container { height: 95vh; border-radius: 30px; } }
-        
         body.dark-mode .app-container { background: rgba(45, 52, 54, 0.9); border-color: #555; }
 
         /* HEADER */
-        .header { padding: 15px 20px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: space-between; z-index: 20; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .header { padding: 15px 20px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: space-between; z-index: 20; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 0 0 20px 20px; }
         .avatar-wrapper { display: flex; align-items: center; gap: 10px; } .kitty-icon { font-size: 1.8rem; } .theme-btn { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
 
         /* CHAT AREA */
-        .chat-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+        .chat-area { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
         .msg { max-width: 80%; padding: 12px 18px; border-radius: 20px; font-size: 0.95rem; line-height: 1.5; word-wrap: break-word; animation: popIn 0.3s; }
         .msg.ai { align-self: flex-start; background: var(--chat-ai); color: var(--chat-text); border-bottom-left-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .msg.user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 5px; }
         .typing { display: none; align-self: flex-start; background: var(--chat-ai); padding: 10px; border-radius: 20px; margin-left: 10px; width: fit-content; }
         .dot { display: inline-block; width: 6px; height: 6px; background: #bbb; border-radius: 50%; margin: 0 2px; animation: bounce 1.4s infinite; }
         
-        /* INPUT AREA */
-        .input-container { padding: 15px; background: var(--chat-ai); border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 10px; align-items: center; position: relative; z-index: 30; padding-bottom: 20px; }
-        input { flex: 1; padding: 12px 15px; border: none; border-radius: 25px; outline: none; background: rgba(0,0,0,0.05); color: var(--chat-text); font-size: 1rem; }
-        .icon-btn { width: 45px; height: 45px; border-radius: 50%; border: none; background: var(--primary); color: white; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; font-size: 1.1rem; }
-        .icon-btn:hover { transform: scale(1.1); }
-        .mic-btn { background: #2ecc71; } .mic-btn.listening { animation: pulse 1s infinite; background: #e74c3c; }
-
-        /* NÚT RESET (CHUẨN VỊ TRÍ) */
+        /* --- NÚT RESET (VỊ TRÍ CHUẨN: CAO HƠN 130PX) --- */
         .float-reset { 
             position: absolute; 
-            bottom: 160px; right: 15px; 
+            bottom: 130px; /* Treo cao hẳn lên trên nút gửi */
+            right: 20px;   /* Căn phải */
             width: 45px; height: 45px; 
             background: white; border: 2px solid var(--primary); border-radius: 50%; 
             display: flex; justify-content: center; align-items: center; 
@@ -63,8 +55,20 @@
         }
         .float-reset:hover { transform: rotate(180deg) scale(1.1); }
 
+        /* INPUT AREA */
+        .input-container { 
+            padding: 15px; background: var(--chat-ai); 
+            border-top: 1px solid rgba(0,0,0,0.05); 
+            display: flex; gap: 10px; align-items: center; 
+            position: relative; z-index: 30; min-height: 80px; 
+        }
+        input { flex: 1; padding: 12px 15px; border: none; border-radius: 25px; outline: none; background: rgba(0,0,0,0.05); color: var(--chat-text); font-size: 1rem; }
+        .icon-btn { width: 45px; height: 45px; border-radius: 50%; border: none; background: var(--primary); color: white; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; font-size: 1.1rem; }
+        .icon-btn:hover { transform: scale(1.1); }
+        .mic-btn { background: #2ecc71; } .mic-btn.listening { animation: pulse 1s infinite; background: #e74c3c; }
+
         /* TOOLS BAR */
-        .tools-bar { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--chat-ai); padding: 10px 0; z-index: 30; padding-bottom: 20px; }
+        .tools-bar { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--chat-ai); padding: 10px 0; z-index: 30; }
         .tool-btn { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; color: #888; font-size: 0.7rem; }
         .tool-btn:hover { color: var(--primary); transform: translateY(-3px); }
         .tool-btn i { font-size: 1.2rem; background: rgba(0,0,0,0.05); padding: 8px; border-radius: 12px; }
@@ -75,30 +79,15 @@
         .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; color: var(--primary); font-size: 1.3rem; }
         .close-btn { background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--chat-text); padding: 0 10px; }
 
-        /* --- GAME STYLE (MOBILE OPTIMIZED) --- */
-        #gameCanvas { 
-            background: #202c3c; 
-            border-radius: 15px; margin: 0 auto; display: block; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            /* QUAN TRỌNG: Chặn hành động mặc định của trình duyệt trên canvas */
-            touch-action: none; 
-        }
-        .game-header-info { display: flex; justify-content: space-between; margin-bottom: 15px; color: white; font-weight: bold; }
-        .score-box { background: #ff9f43; color:white; padding: 5px 15px; border-radius: 20px; }
-        
-        .preview-container { 
-            display: flex; justify-content: space-around; margin-top: 20px; 
-            background: rgba(0,0,0,0.05); padding: 10px; border-radius: 15px; 
-            touch-action: none; /* Chặn cuộn ở khu vực chọn gạch */
-        }
-        .preview-canvas { width: 80px; height: 80px; background: transparent; touch-action: none; }
-        
-        #gameOverOverlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); color: white; padding: 30px; border-radius: 20px; text-align: center; z-index: 200; display: none; border: 3px solid #ff9f43; width: 80%; }
-        .restart-btn { background: linear-gradient(to bottom, #ff9f43, #e67e22); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 5px 0 #d35400; }
-
-        /* MAP & THERAPY */
+        /* --- CSS LỚP HỌC (FINAL FIX) --- */
         .map-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 10px; justify-content: center; margin-top: 10px; width: 100%; }
-        .student-seat { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; color: white; font-weight: bold; cursor: pointer; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.15); transition: transform 0.2s; }
+        .student-seat { 
+            width: 45px; height: 45px; border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; 
+            font-size: 0.8rem; color: white; font-weight: bold; 
+            cursor: pointer; position: relative; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15); transition: transform 0.2s; 
+        }
         .student-seat:hover { transform: scale(1.2); z-index: 10; }
         .seat-happy { background-color: #00b894 !important; animation: breathe 3s infinite; }
         .seat-sad { background-color: #74b9ff !important; animation: breathe 4s infinite; }
@@ -107,12 +96,24 @@
 
         .student-popup { position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%); width: 90%; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 150; display: none; animation: popIn 0.3s; text-align: center; border: 2px solid var(--primary); }
         .student-popup.active { display: block; }
+        .popup-name { font-weight: bold; font-size: 1.1rem; color: var(--primary); }
+        .popup-status { margin: 5px 0 15px 0; font-style: italic; color: #555; }
         .send-love-btn { background: #ff7675; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 5px; margin: 0 auto; }
         .floating-heart { position: absolute; font-size: 2rem; color: #ff7675; animation: floatUp 1.5s ease-out forwards; pointer-events: none; z-index: 200; }
 
+        /* THERAPY FIX */
         .therapy-item { background: rgba(0,0,0,0.03); padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
         .therapy-btn-mini { background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; }
 
+        /* GAME CSS */
+        #gameCanvas { background: #202c3c; border-radius: 15px; margin: 0 auto; display: block; box-shadow: 0 10px 30px rgba(0,0,0,0.4); touch-action: none; }
+        .game-header-info { display: flex; justify-content: space-between; margin-bottom: 15px; color: white; font-weight: bold; }
+        .score-box { background: #ff9f43; color:white; padding: 5px 15px; border-radius: 20px; }
+        .preview-container { display: flex; justify-content: space-around; margin-top: 20px; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 15px; }
+        .preview-canvas { width: 80px; height: 80px; background: transparent; touch-action: none; }
+        #gameOverOverlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); color: white; padding: 30px; border-radius: 20px; text-align: center; z-index: 200; display: none; border: 3px solid #ff9f43; width: 80%; }
+        .restart-btn { background: linear-gradient(to bottom, #ff9f43, #e67e22); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; box-shadow: 0 5px 0 #d35400; }
+        
         /* OVERLAYS */
         #resetOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #a8e6cf, #dcedc1); z-index: 300; display: none; flex-direction: column; justify-content: center; align-items: center; color: #2d3436; }
         .reset-circle { width: 180px; height: 180px; border: 8px solid white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 3rem; font-weight: bold; color: white; animation: breathe 8s infinite; }
@@ -133,7 +134,7 @@
             <div class="avatar-wrapper">
                 <i class="fas fa-cat kitty-icon"></i>
                 <div style="margin-left: 10px;">
-                    <div style="font-weight: bold; font-size: 1.1rem;">EmoMap</div>
+                    <div style="font-weight: bold; font-size: 1.1rem;">Kitty AI</div>
                     <div style="font-size: 0.75rem; opacity: 0.9;" id="statusText">Trợ lý cảm xúc</div>
                 </div>
             </div>
@@ -224,7 +225,7 @@
         let audioCtx;
         let myChart = null;
 
-        // --- KHỞI TẠO ---
+        // --- KHỞI TẠO CHUNG ---
         window.onload = function() {
             renderClassMap();
             checkDarkMode();
@@ -233,20 +234,9 @@
             addMessage(greeting, 'ai');
             document.getElementById('statusText').innerText = "Groq AI Online ⚡";
             
-            const systemPrompt = `Bạn là EmoMap AI, một nhà tâm lý học lỗi lạc.
-                NHIỆM VỤ PHÂN TÍCH CHUYÊN SÂU:
-                1. 🧬 **Emotion DNA:** Xác định "mã gen cảm xúc" của người dùng (Nhạy cảm/Kiên cường/Dễ tổn thương).
-                2. 🧠 **Fake Emotion Radar:** Phát hiện sự mâu thuẫn giữa lời nói "Mình ổn" và giọng văn buồn bã.
-                3. ⏳ **Emotion Forecasting:** Dự báo: "Nếu tiếp tục suy nghĩ này, khả năng cao bạn sẽ bị burnout trong 2 ngày tới."
-                4. 🧩 **Cognitive Distortion:** Chỉ ra lỗi tư duy (Ví dụ: "Bạn đang tư duy trắng-đen, sự thật không tệ như vậy").
-                5. 🪞 **Emotion Mirror:** "Nếu mình là bạn, mình cũng sẽ cảm thấy bất lực."
-                6. 🛑 **Burnout Scanner:** Cảnh báo nếu thấy dấu hiệu kiệt sức cảm xúc.
-
-                QUY TẮC HÀNH XỬ:
-                - Nếu chỉ chào hỏi -> Chào lại thân thiện.
-                - Nếu NGHE TỪ KHÓA BUỒN/STRESS -> Phân tích nhẹ nhàng rồi hỏi: "Cậu có muốn nghe nhạc Lofi để thư giãn không?".
-                - Nếu USER ĐỒNG Ý NGHE NHẠC -> CHỈ TRẢ LỜI DUY NHẤT CỤM TỪ: "PLAY_SPOTIFY_NOW".
-                - Giọng văn: Ấm áp, thấu hiểu, chuyên nghiệp nhưng gần gũi.`;
+            const systemPrompt = `Bạn là Kitty AI, chuyên gia tâm lý học đường.
+            NHIỆM VỤ: Emotion DNA, Fake Emotion, CBT, Emotion Mirror, Burnout Scanner.
+            QUY TẮC: Nếu BUỒN/STRESS -> Hỏi nghe nhạc Lofi. Nếu ĐỒNG Ý -> CHỈ TRẢ LỜI: "PLAY_SPOTIFY_NOW".`;
 
             messages.push({ role: "system", content: systemPrompt });
             messages.push({ role: "assistant", content: greeting });
@@ -256,7 +246,7 @@
             initGameEngine(); 
         };
 
-        // --- GAME ENGINE (MOBILE TOUCH SUPPORT) ---
+        // --- GAME ENGINE (BLOCK BLAST) ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const GRID_ROWS = 8; const GRID_COLS = 8; const CELL_SIZE = 40; const GRID_OFFSET_X = 15; const GRID_OFFSET_Y = 30;
@@ -265,10 +255,15 @@
         let board = Array(GRID_ROWS).fill().map(() => Array(GRID_COLS).fill(0));
         let previewShapes = [null, null, null];
         let previewCanvases = [document.getElementById('preview1'), document.getElementById('preview2'), document.getElementById('preview3')];
+        
         let particles = []; let floatingTexts = []; let score = 0; let bestScore = localStorage.getItem('blockBlastBestScore') || 0;
-        let isGameOver = false; let draggingShape = null; let cleanBoardTimer = 0; let gameLoopId;
+        let isGameOver = false; let draggingShape = null;
+        let cleanBoardTimer = 0; let gameLoopId;
+        let comboCount = 0;
 
-        const SHAPE_TEMPLATES = [ { m: [[1]], c: 0 }, { m: [[1,1]], c: 1 }, { m: [[1,1,1]], c: 2 }, { m: [[1],[1],[1]], c: 2 }, { m: [[1,1],[1,0]], c: 4 }, { m: [[1,1,1],[0,1,0]], c: 0 }, { m: [[1,1,0],[0,1,1]], c: 1 } ];
+        const SHAPES_EASY = [ { m: [[1]], c: 0 }, { m: [[1,1]], c: 1 }, { m: [[1],[1]], c: 1 }, { m: [[1,1],[1,1]], c: 3 } ];
+        const SHAPES_MEDIUM = [ { m: [[1,1,1]], c: 2 }, { m: [[1],[1],[1]], c: 2 }, { m: [[1,1,1],[0,1,0]], c: 4 }, { m: [[0,1,0],[1,1,1]], c: 4 }, { m: [[1,0],[1,1],[1,0]], c: 4 }, { m: [[0,1],[1,1],[0,1]], c: 4 } ];
+        const SHAPES_HARD = [ { m: [[1,1,0],[0,1,1]], c: 5 }, { m: [[0,1,1],[1,1,0]], c: 5 }, { m: [[1,0,0],[1,1,1]], c: 6 }, { m: [[1,1,1],[0,0,1]], c: 6 }, { m: [[1,1,1,1]], c: 6 } ];
 
         function initGameEngine() {
             if (canvas.width === 0) { canvas.width = 350; canvas.height = 380; }
@@ -276,16 +271,19 @@
             if (previewShapes.every(s => s === null)) spawnShapes();
             if (!gameLoopId) gameLoop();
             
-            // Mobile Event Listeners (Global Window)
             if (!canvas.hasAttribute('data-init')) {
-                // Mouse
-                window.addEventListener('mousedown', handleInputStart);
-                window.addEventListener('mousemove', handleInputMove);
+                canvas.addEventListener('mousedown', handleInputStart);
+                canvas.addEventListener('mousemove', handleInputMove);
                 window.addEventListener('mouseup', handleInputEnd);
-                // Touch
-                window.addEventListener('touchstart', handleInputStart, {passive: false});
-                window.addEventListener('touchmove', handleInputMove, {passive: false});
+                
+                canvas.addEventListener('touchstart', handleInputStart, {passive: false});
+                canvas.addEventListener('touchmove', handleInputMove, {passive: false});
                 window.addEventListener('touchend', handleInputEnd);
+                
+                previewCanvases.forEach((pCvs, index) => {
+                    pCvs.addEventListener('mousedown', (e) => handleStart(e, index));
+                    pCvs.addEventListener('touchstart', (e) => handleStart(e, index), {passive: false});
+                });
                 canvas.setAttribute('data-init', 'true');
             }
         }
@@ -294,10 +292,6 @@
             let filledCount = board.flat().filter(c => c !== 0).length;
             let fillRatio = filledCount / (GRID_ROWS * GRID_COLS);
             let pool;
-            const SHAPES_EASY = [ { m: [[1]], c: 0 }, { m: [[1,1]], c: 1 }, { m: [[1],[1]], c: 1 }, { m: [[1,1],[1,1]], c: 3 } ];
-            const SHAPES_MEDIUM = [ { m: [[1,1,1]], c: 2 }, { m: [[1],[1],[1]], c: 2 }, { m: [[1,1,1],[0,1,0]], c: 4 }, { m: [[0,1,0],[1,1,1]], c: 4 }, { m: [[1,0],[1,1],[1,0]], c: 4 }, { m: [[0,1],[1,1],[0,1]], c: 4 } ];
-            const SHAPES_HARD = [ { m: [[1,1,0],[0,1,1]], c: 5 }, { m: [[0,1,1],[1,1,0]], c: 5 }, { m: [[1,0,0],[1,1,1]], c: 6 }, { m: [[1,1,1],[0,0,1]], c: 6 }, { m: [[1,1,1,1]], c: 6 } ];
-            
             if (fillRatio > 0.65) pool = Math.random() < 0.8 ? SHAPES_EASY : SHAPES_MEDIUM;
             else if (fillRatio < 0.1) pool = Math.random() < 0.4 ? SHAPES_MEDIUM : SHAPES_HARD;
             else { let r = Math.random(); if (r < 0.3) pool = SHAPES_EASY; else if (r < 0.7) pool = SHAPES_MEDIUM; else pool = SHAPES_HARD; }
@@ -317,7 +311,8 @@
 
         function gameLoop() {
             if (!document.getElementById('gameModal').classList.contains('active')) {
-                gameLoopId = null; return; 
+                gameLoopId = null;
+                return; 
             }
             update(); draw();
             gameLoopId = requestAnimationFrame(gameLoop);
@@ -416,17 +411,28 @@
             let totalLines = rowsToClear.length + colsToClear.length;
 
             if(totalLines > 0) {
+                comboCount++;
                 canvas.style.animation = 'none'; canvas.offsetHeight; canvas.style.animation = 'shake 0.3s';
+                
                 rowsToClear.forEach(r => { for(let c=0; c<GRID_COLS; c++) { createParticles(c, r, board[r][c]); board[r][c] = 0; } });
                 colsToClear.forEach(c => { for(let r=0; r<GRID_ROWS; r++) { createParticles(c, r, board[r][c]); board[r][c] = 0; } });
-                let baseLineScore = 100; let multiLineMultiplier = totalLines === 1 ? 1 : (totalLines === 2 ? 2 : (totalLines === 3 ? 4 : 8));
-                addScore(totalLines * baseLineScore * multiLineMultiplier, canvas.width/2, canvas.height/2, true);
+
+                let baseLineScore = 100;
+                let multiLineMultiplier = totalLines === 1 ? 1 : (totalLines === 2 ? 2 : (totalLines === 3 ? 4 : 8));
+                let comboMultiplier = comboCount;
+                
+                addScore((totalLines * baseLineScore * multiLineMultiplier * comboMultiplier), canvas.width/2, canvas.height/2, true);
+                
+                if(comboCount > 1) floatingTexts.push({x: canvas.width/2, y: 230, text: `Combo x${comboCount}!`, life: 1.5, color: '#f1c40f', font: 'bold 20px Arial'});
                 if(totalLines > 1) floatingTexts.push({x: canvas.width/2, y: 200, text: totalLines > 2 ? "AMAZING!" : "DOUBLE!", life: 1.5, color: '#f1c40f', font: 'bold 28px Arial'});
+                
                 if(isBoardEmpty()) {
                     cleanBoardTimer = 100;
                     floatingTexts.push({x: canvas.width/2, y: 150, text: "PERFECT CLEAR!", life: 2.0, color: '#00ff00', font: 'bold 30px Arial'});
                     addScore(500, canvas.width/2, 250, true);
                 }
+            } else {
+                comboCount = 0; 
             }
         }
 
@@ -434,53 +440,34 @@
         function createParticles(c, r, color) { let x = GRID_OFFSET_X + c*CELL_SIZE + CELL_SIZE/2; let y = GRID_OFFSET_Y + r*CELL_SIZE + CELL_SIZE/2; for(let i=0; i<8; i++) particles.push({ x: x, y: y, vx: (Math.random()-0.5)*8, vy: (Math.random()-0.5)*8, life: 1.0, color: color, size: Math.random()*8+4 }); }
         function addScore(val, x, y, isMajor) { score += val; document.getElementById('scoreVal').innerText = score; if(score > bestScore) { bestScore = score; localStorage.setItem('blockBlastBestScore', bestScore); document.getElementById('bestScoreVal').innerText = bestScore; } floatingTexts.push({ x: x, y: y, text: "+" + val, life: 1.0, font: isMajor ? 'bold 32px Arial' : 'bold 20px Arial', color: isMajor ? '#FFD700' : 'white' }); }
         function checkGameOver() { if(isGameOver) return; let canPlaceAny = false; for(let i=0; i<3; i++) { if(previewShapes[i]) { for(let r=0; r<GRID_ROWS; r++) { for(let c=0; c<GRID_COLS; c++) { if(canPlace(previewShapes[i].matrix, r, c)) { canPlaceAny = true; break; } } if(canPlaceAny) break; } } if(canPlaceAny) break; } if(!canPlaceAny && previewShapes.some(s => s !== null)) { isGameOver = true; document.getElementById('finalScore').innerText = score; document.getElementById('gameOverOverlay').style.display = 'block'; } }
-        function resetGame() { board = Array(GRID_ROWS).fill().map(() => Array(GRID_COLS).fill(0)); score = 0; isGameOver = false; document.getElementById('scoreVal').innerText = 0; document.getElementById('gameOverOverlay').style.display = 'none'; previewShapes = [null, null, null]; spawnShapes(); }
+        function resetGame() { board = Array(GRID_ROWS).fill().map(() => Array(GRID_COLS).fill(0)); score = 0; comboCount = 0; isGameOver = false; document.getElementById('scoreVal').innerText = 0; document.getElementById('gameOverOverlay').style.display = 'none'; previewShapes = [null, null, null]; spawnShapes(); }
         
-        // --- MOBILE TOUCH HANDLERS ---
-        function handleInputStart(e) {
-            if(isGameOver) return;
-            // Chỉ xử lý nếu chạm vào canvas preview
-            const t = e.touches ? e.touches[0] : e;
-            const clientX = t.clientX;
-            const clientY = t.clientY;
-            
-            // Kiểm tra xem có chạm vào preview canvas nào không
-            previewCanvases.forEach((pCvs, idx) => {
-                const rect = pCvs.getBoundingClientRect();
-                if(clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom && previewShapes[idx]) {
-                    e.preventDefault(); // Chặn cuộn
-                    const mainRect = canvas.getBoundingClientRect();
-                    draggingShape = { 
-                        shapeData: previewShapes[idx], 
-                        previewIndex: idx, 
-                        x: clientX - mainRect.left - CELL_SIZE/2, 
-                        y: clientY - mainRect.top - CELL_SIZE - 20 // Nhấc cao lên
-                    };
-                    previewShapes[idx] = null; // Ẩn ở preview
-                    drawAllPreviews();
-                }
-            });
+        function handleInputStart(e) {}
+        function handleStart(e, index) {
+            if(isGameOver || !previewShapes[index]) return;
+            e.preventDefault();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const mainRect = canvas.getBoundingClientRect();
+            draggingShape = { shapeData: previewShapes[index], previewIndex: index, x: clientX - mainRect.left - CELL_SIZE/2, y: clientY - mainRect.top - CELL_SIZE/2 };
+            previewShapes[index] = null; drawAllPreviews();
         }
-
         function handleInputMove(e) {
             if(!draggingShape) return;
-            e.preventDefault(); // Chặn cuộn
-            const t = e.touches ? e.touches[0] : e;
+            e.preventDefault();
             const mainRect = canvas.getBoundingClientRect();
-            draggingShape.x = t.clientX - mainRect.left - CELL_SIZE/2;
-            draggingShape.y = t.clientY - mainRect.top - CELL_SIZE - 20;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            draggingShape.x = clientX - mainRect.left - CELL_SIZE/2;
+            draggingShape.y = clientY - mainRect.top - CELL_SIZE;
         }
-
         function handleInputEnd(e) {
             if(!draggingShape) return;
             const {r, c} = getGridPos(draggingShape.x, draggingShape.y);
             if(canPlace(draggingShape.shapeData.matrix, r, c)) {
                 placeShape(draggingShape.shapeData, r, c);
                 if(previewShapes.every(s => s === null)) spawnShapes(); else checkGameOver();
-            } else {
-                previewShapes[draggingShape.previewIndex] = draggingShape.shapeData;
-                drawAllPreviews();
-            }
+            } else { previewShapes[draggingShape.previewIndex] = draggingShape.shapeData; drawAllPreviews(); }
             draggingShape = null;
         }
 
@@ -506,26 +493,49 @@
         function renderChart() { const ctx = document.getElementById('emotionChart').getContext('2d'); if(myChart) myChart.destroy(); myChart = new Chart(ctx, { type: 'line', data: { labels: history.map(h => h.time), datasets: [{ label: 'Cảm xúc', data: history.map(h => h.score), borderColor: '#ff9f43', backgroundColor: 'rgba(255, 159, 67, 0.2)', tension: 0.4, fill: true }] } }); }
         
         // --- FIXED EMPATHY MAP ---
-        function renderClassMap(){ const g=document.getElementById('classMapGrid'); g.innerHTML=''; 
+        function renderClassMap(){ 
+            const g=document.getElementById('classMapGrid'); g.innerHTML=''; 
             const moods = ['happy', 'sad', 'stress']; const status = ["Vui vẻ 🌻", "Hơi buồn 🌧️", "Áp lực 🤯"];
             for(let i=0; i<19; i++){ 
                 let r = Math.floor(Math.random()*3);
                 let d=document.createElement('div'); 
                 d.className=`student-seat seat-${moods[r]}`; 
                 d.innerText=i+1;
-                d.onclick = () => { document.getElementById('popupName').innerText=`Bạn bàn ${i+1}`; document.getElementById('popupStatus').innerText=`"${status[r]}"`; document.getElementById('studentPopup').classList.add('active'); };
+                d.onclick = () => {
+                    document.getElementById('popupName').innerText=`Bạn bàn ${i+1}`;
+                    document.getElementById('popupStatus').innerText=`"${status[r]}"`;
+                    document.getElementById('studentPopup').classList.add('active');
+                };
                 g.appendChild(d); 
             } 
             let me = document.createElement('div'); me.className='student-seat seat-me'; me.innerText='Me'; g.insertBefore(me, g.firstChild);
         }
-        function sendLove(){ document.getElementById('studentPopup').classList.remove('active'); const m = document.getElementById('mapModal'); for(let i=0;i<5;i++) { let h=document.createElement('div'); h.className='floating-heart'; h.innerHTML='💖'; h.style.left = Math.random()*80+10+'%'; h.style.bottom='100px'; m.appendChild(h); setTimeout(()=>h.remove(), 1500); } }
+        function sendLove(){ 
+            document.getElementById('studentPopup').classList.remove('active'); 
+            const m = document.getElementById('mapModal');
+            for(let i=0;i<5;i++) {
+                let h=document.createElement('div'); h.className='floating-heart'; h.innerHTML='💖';
+                h.style.left = Math.random()*80+10+'%'; h.style.bottom='100px';
+                m.appendChild(h); setTimeout(()=>h.remove(), 1500);
+            }
+        }
+        
         function initAudio(){ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }
         function playWhiteNoise(){ initAudio(); const b=audioCtx.createBuffer(1, audioCtx.sampleRate*2, audioCtx.sampleRate); const d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; whiteNoiseSource=audioCtx.createBufferSource(); whiteNoiseSource.buffer=b; whiteNoiseSource.loop=true; const g=audioCtx.createGain(); g.gain.value=0.1; whiteNoiseSource.connect(g); g.connect(audioCtx.destination); whiteNoiseSource.start(); }
         function stopWhiteNoise(){ if(whiteNoiseSource){ whiteNoiseSource.stop(); whiteNoiseSource=null; } }
         let resetInt;
         window.activateReset=function(){ document.getElementById('resetOverlay').style.display='flex'; try{playWhiteNoise();}catch(e){} let t=30; resetInt=setInterval(()=>{ t--; document.getElementById('resetCount').innerText=t; if(t<=0) closeReset(); },1000); }
         window.closeReset=function(){ clearInterval(resetInt); document.getElementById('resetOverlay').style.display='none'; stopWhiteNoise(); addMessage("Chào mừng cậu quay lại! 🌿", 'ai'); }
-        window.startExercise=function(t){ closeModal('therapyModal'); addMessage(t==='breath'?"🌬️ <b>Hít thở:</b> Hít 4s - Giữ 7s - Thở 8s.":(t==='stretch'?"🙆 <b>Cổ vai:</b> Nghiêng đầu 10s.":"👁️ <b>5-4-3-2-1:</b> Tìm 5 vật nhìn thấy", 'ai')); }
+        
+        // --- FIXED THERAPY (SỬA LỖI "AI") ---
+        function startExercise(type) {
+            closeModal('therapyModal');
+            let text = "";
+            if(type === 'breath') text = "🌬️ <b>Hít thở 4-7-8:</b><br>1. Hít vào (4s)<br>2. Giữ hơi (7s)<br>3. Thở ra (8s)<br><i>Lặp lại 4 lần.</i>";
+            else if(type === 'stretch') text = "🙆 <b>Thư giãn Cổ Vai:</b><br>1. Nghiêng đầu trái 10s<br>2. Nghiêng đầu phải 10s<br>3. Xoay vai 5 lần.";
+            else if(type === 'grounding') text = "👁️ <b>Grounding 5-4-3-2-1:</b><br>👀 5 vật nhìn thấy<br>✋ 4 vật chạm được<br>👂 3 âm thanh<br>👃 2 mùi hương<br>👅 1 vị";
+            addMessage(text, 'ai');
+        }
 
         document.getElementById('userInput').addEventListener("keypress", e=>{if(e.key==="Enter") handleChat()});
     </script>
