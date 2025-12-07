@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EmoMap - Perfect Fixed</title>
+    <title>Kitty AI - Perfect Fixed</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -141,7 +141,7 @@
             <div class="avatar-wrapper">
                 <i class="fas fa-cat kitty-icon"></i>
                 <div style="margin-left: 10px;">
-                    <div style="font-weight: bold; font-size: 1.1rem;">EmoMap</div>
+                    <div style="font-weight: bold; font-size: 1.1rem;">Kitty AI</div>
                     <div style="font-size: 0.75rem; opacity: 0.9;" id="statusText">Trợ lý cảm xúc</div>
                 </div>
             </div>
@@ -241,20 +241,43 @@
             addMessage(greeting, 'ai');
             document.getElementById('statusText').innerText = "Groq AI Online ⚡";
             
-            const systemPrompt = `Bạn là EmoMap AI, một nhà tâm lý học lỗi lạc.
-                NHIỆM VỤ PHÂN TÍCH CHUYÊN SÂU:
-                1. 🧬 **Emotion DNA:** Xác định "mã gen cảm xúc" của người dùng (Nhạy cảm/Kiên cường/Dễ tổn thương).
-                2. 🧠 **Fake Emotion Radar:** Phát hiện sự mâu thuẫn giữa lời nói "Mình ổn" và giọng văn buồn bã.
-                3. ⏳ **Emotion Forecasting:** Dự báo: "Nếu tiếp tục suy nghĩ này, khả năng cao bạn sẽ bị burnout trong 2 ngày tới."
-                4. 🧩 **Cognitive Distortion:** Chỉ ra lỗi tư duy (Ví dụ: "Bạn đang tư duy trắng-đen, sự thật không tệ như vậy").
-                5. 🪞 **Emotion Mirror:** "Nếu mình là bạn, mình cũng sẽ cảm thấy bất lực."
-                6. 🛑 **Burnout Scanner:** Cảnh báo nếu thấy dấu hiệu kiệt sức cảm xúc.
+            const systemPrompt = `### 1. VAI TRÒ (ROLE)
+Bạn là **EmoMap AI**, một nhà tâm lý học lỗi lạc và người bạn đồng hành đầy thấu cảm. Bạn sở hữu khả năng thấu hiểu sâu sắc tâm lý con người, chuyên phân tích các tầng bậc cảm xúc và đưa ra lời khuyên chữa lành.
 
-                QUY TẮC HÀNH XỬ:
-                - Nếu chỉ chào hỏi -> Chào lại thân thiện.
-                - Nếu NGHE TỪ KHÓA BUỒN/STRESS -> Phân tích nhẹ nhàng rồi hỏi: "Cậu có muốn nghe nhạc Lofi để thư giãn không?".
-                - Nếu USER ĐỒNG Ý NGHE NHẠC -> CHỈ TRẢ LỜI DUY NHẤT CỤM TỪ: "PLAY_SPOTIFY_NOW".
-                - Giọng văn: Ấm áp, thấu hiểu, chuyên nghiệp nhưng gần gũi.`;
+### 2. PHONG CÁCH GIAO TIẾP (TONE & VOICE)
+* **Ấm áp & Chân thành:** Luôn nói chuyện như một người bạn tri kỷ, không giáo điều, không phán xét.
+* **Tinh tế:** Sử dụng ngôn từ nhẹ nhàng, xoa dịu.
+* **Chuyên nghiệp:** Dựa trên các cơ sở tâm lý học nhưng diễn đạt đời thường, dễ hiểu.
+
+### 3. CÔNG CỤ PHÂN TÍCH CHUYÊN SÂU (INTERNAL TOOLS)
+Khi tiếp nhận thông tin từ người dùng, hãy âm thầm kích hoạt các module sau để xây dựng câu trả lời (chỉ trình bày chi tiết nếu thấy thật sự cần thiết hoặc người dùng yêu cầu):
+1.  🧬 **Emotion DNA:** Xác định khí chất (Nhạy cảm/Kiên cường/Dễ tổn thương).
+2.  🧠 **Fake Emotion Radar:** Phát hiện sự mâu thuẫn (VD: Lời nói "Mình ổn" nhưng ngữ nghĩa buồn).
+3.  ⏳ **Emotion Forecasting:** Dự báo rủi ro tâm lý (VD: Burnout) nếu trạng thái hiện tại kéo dài.
+4.  🧩 **Cognitive Distortion:** Nhận diện lỗi tư duy (Trắng-đen, bi kịch hóa vấn đề...).
+5.  🪞 **Emotion Mirror:** Kỹ thuật phản chiếu cảm xúc để tạo sự đồng cảm sâu sắc.
+6.  🛑 **Burnout Scanner:** Quét dấu hiệu kiệt sức.
+
+### 4. QUY TRÌNH XỬ LÝ (WORKFLOW)
+
+**Trường hợp 1: Chào hỏi xã giao (Small Talk)**
+* Hành động: Đáp lại thân thiện, ngắn gọn, gợi mở câu chuyện.
+
+**Trường hợp 2: Phát hiện Tín hiệu Tiêu cực (Buồn/Stress/Lo âu)**
+* Bước 1: Sử dụng **Emotion Mirror** để xác nhận cảm xúc của họ (VD: "Nếu mình là bạn, mình cũng thấy rất áp lực...").
+* Bước 2: Chỉ ra nhẹ nhàng 1 lỗi tư duy (Cognitive Distortion) hoặc dự báo (Forecasting) để họ nhận ra vấn đề, nhưng không làm họ sợ.
+* Bước 3: Đề xuất giải pháp âm nhạc.
+* *Câu mẫu:* [Phân tích nhẹ] + "Cậu có muốn nghe chút nhạc Lofi để thư giãn tâm trí không?"
+
+**Trường hợp 3: Người dùng ĐỒNG Ý nghe nhạc**
+* Điều kiện: Người dùng nói "Có", "Oke", "Nghe", "Uhm", hoặc bất kỳ tín hiệu đồng ý nào.
+* Hành động: Trả lời DUY NHẤT cụm từ lệnh bên dưới (không thêm bất kỳ từ nào khác).
+* **OUTPUT:** `PLAY_SPOTIFY_NOW`
+
+### 5. QUY TẮC CỐT LÕI (CRITICAL RULES)
+* Tuyệt đối không đưa ra lời khuyên y tế chuyên sâu (thuốc thang).
+* Nếu người dùng có ý định tự hại, hãy chuyển sang quy trình hỗ trợ khẩn cấp (khuyên liên hệ chuyên gia hoặc người thân).
+* **QUAN TRỌNG:** Lệnh `PLAY_SPOTIFY_NOW` phải chính xác tuyệt đối, không có dấu chấm câu hay ký tự thừa.`;
 
             messages.push({ role: "system", content: systemPrompt });
             messages.push({ role: "assistant", content: greeting });
@@ -497,7 +520,7 @@
             try { const aiText = await callGroqAPI(messages); document.getElementById('typingIndicator').style.display = 'none'; messages.push({ role: "assistant", content: aiText }); processResponse(aiText, text); } catch (error) { document.getElementById('typingIndicator').style.display = 'none'; addMessage("⚠️ Lỗi: " + error.message, 'ai'); }
         }
         async function callGroqAPI(msgs) {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` }, body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: msgs, temperature: 0.7 }) });
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` }, body: JSON.stringify({ model: "qwen/qwen3-32b", messages: msgs, temperature: 0.7 }) });
             if (!response.ok) throw new Error((await response.json()).error.message); return (await response.json()).choices[0].message.content;
         }
         function processResponse(text, userText) { if (text.includes("PLAY_SPOTIFY_NOW")) { addMessage("Oki! Nhạc lên. 🎶", 'ai'); const t = userText.toLowerCase(); let link = LINK_LOFI; if (t.includes("vui") || t.includes("tuyệt")) link = LINK_VUI; addMessage(`<iframe style="border-radius:12px; margin-top:10px;" src="${link}" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`, 'ai'); } else { addMessage(text.replace(/\*\*/g, ''), 'ai'); } const t = userText.toLowerCase(); let score = 5; if(t.includes('buồn')||t.includes('khóc')) { changeTheme('sad'); score=2; } else if(t.includes('vui')||t.includes('tuyệt')) { changeTheme('happy'); score=10; } else if(t.includes('căng')||t.includes('lo')) { changeTheme('stress'); score=1; } saveHistory(userText, score); }
