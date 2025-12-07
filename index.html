@@ -3,61 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cổng Thông Tin EmoMap</title>
-    <style>
-        body {
-            margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #fff0e6, #ffeaa7);
-            height: 100vh; display: flex; justify-content: center; align-items: center;
-        }
-        .container {
-            text-align: center; background: white; padding: 50px;
-            border-radius: 30px; box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            max-width: 500px; width: 90%;
-        }
-        h1 { color: #ff9f43; font-size: 2.5rem; margin-bottom: 10px; }
-        p { color: #666; margin-bottom: 40px; }
-        
-        .btn-group { display: flex; flex-direction: column; gap: 20px; }
-        
-        .btn {
-            padding: 20px; border-radius: 15px; text-decoration: none;
-            font-weight: bold; font-size: 1.2rem; transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        
-        /* Nút Học Sinh */
-        .btn-student { background: #ff9f43; color: white; box-shadow: 0 10px 20px rgba(255, 159, 67, 0.3); }
-        .btn-student:hover { transform: translateY(-5px); background: #e67e22; }
-        
-        /* Nút Giáo Viên */
-        .btn-admin { background: white; color: #2c3e50; border: 2px solid #eee; }
-        .btn-admin:hover { background: #f9f9f9; border-color: #bdc3c7; }
-
-        .footer { margin-top: 30px; font-size: 0.8rem; color: #aaa; }
-    </style>
+    <title>EmoMap - Welcome</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* --- CẤU HÌNH CƠ BẢN --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        
+        body {
+            background-color: #000; /* Nền đen để làm nổi bật Aurora */
+            color: white;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* --- 1. HIỆU ỨNG AURORA (CODE CỦA BẠN) --- */
+        .aurora {
+            position: absolute; 
+            top: -50%; left: -50%; 
+            width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, transparent 0%, #6c5ce7 20%, #fd79a8 40%, transparent 60%);
+            animation: rotate 10s linear infinite; 
+            opacity: 0.4; /* Mình chỉnh lên 0.4 cho rõ hơn chút */
+            filter: blur(80px);
+            z-index: 0;
+        }
+
+        /* --- 2. NỘI DUNG CHÍNH (CODE CỦA BẠN) --- */
+        .hero-content { 
+            z-index: 10; 
+            text-align: center; 
+            animation: floatUp 1s ease-out; 
+            position: relative;
+        }
+
+        .logo-emoji {
+            font-size: 5rem;
+            margin-bottom: 10px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .hero-title { 
+            font-size: 4rem; 
+            font-weight: 800; 
+            background: linear-gradient(to right, #a29bfe, #ffeaa7); 
+            -webkit-background-clip: text; 
+            color: transparent; 
+            margin-bottom: 10px; 
+            letter-spacing: -2px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle { 
+            font-size: 1.2rem; 
+            color: #b2bec3; 
+            margin-bottom: 40px; 
+            font-weight: 300; 
+        }
+        
+        .start-btn {
+            padding: 15px 50px; 
+            font-size: 1.2rem; 
+            font-weight: bold;
+            background: white; 
+            color: black; 
+            border: none; 
+            border-radius: 50px;
+            cursor: pointer; 
+            transition: 0.3s; 
+            box-shadow: 0 0 20px rgba(255,255,255,0.3);
+            position: relative; 
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .start-btn:hover { 
+            transform: scale(1.05); 
+            box-shadow: 0 0 40px rgba(255,255,255,0.6); 
+        }
+
+        /* --- 3. ĐỊNH NGHĨA ANIMATION (BẮT BUỘC PHẢI CÓ) --- */
+        
+        /* Xoay vòng tròn cho Aurora */
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Hiệu ứng nổi lên khi vào trang */
+        @keyframes floatUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hiệu ứng logo bay nhẹ */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* Hiệu ứng chuyển trang */
+        body.fade-out { opacity: 0; transition: opacity 0.5s ease; }
+
+    </style>
 </head>
 <body>
 
-    <div class="container">
-        <img src="https://cdn-icons-png.flaticon.com/512/763/763775.png" alt="" width="20%">
-        <h1>EmoMap</h1>
-        <p>Hệ thống Chăm sóc Sức khỏe Tinh thần Học đường</p>
+    <div class="aurora"></div>
 
-        <div class="btn-group">
-            <a href="hoc_sinh.html" class="btn btn-student">
-                <i class="fas fa-user-graduate"></i> Dành cho Học sinh
-            </a>
-            <a href="admin.html" class="btn btn-admin">
-                <i class="fas fa-chalkboard-teacher"></i> Dành cho Giáo viên
-            </a>
-        </div>
-
-        <div class="footer">Phiên bản 1.0 • Powered by Groq AI</div>
+    <div class="hero-content">
+        <div class="logo-emoji">🐱</div>
+        <h1 class="hero-title">EmoMap</h1>
+        <p class="hero-subtitle">Your Emotional Companion</p>
+        
+        <button class="start-btn" onclick="goToApp()">
+            Bắt đầu ngay <i class="fas fa-arrow-right"></i>
+        </button>
     </div>
 
+    <script>
+        function goToApp() {
+            // Hiệu ứng chuyển trang mượt mà
+            document.body.classList.add('fade-out');
+            setTimeout(() => {
+                window.location.href = 'hoc_sinh.html';
+            }, 500);
+        }
+    </script>
 </body>
-
 </html>
-
