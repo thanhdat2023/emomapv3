@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EmoMap - Perfect Fixed</title>
+    <title>EmoMap - Vietnamese Perfect</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* --- 1. CẤU HÌNH MÀU SẮC --- */
+        /* --- 1. GIAO DIỆN CHUNG --- */
         :root { --primary: #ff9f43; --bg-color: #fff0e6; --chat-ai: #ffffff; --chat-text: #333; --shadow: 0 10px 30px rgba(0,0,0,0.1); --modal-bg: rgba(255,255,255,0.98); }
         body.dark-mode { --primary: #e67e22; --bg-color: #2d3436; --chat-ai: #636e72; --chat-text: #dfe6e9; --shadow: 0 10px 30px rgba(0,0,0,0.3); --modal-bg: rgba(45, 52, 54, 0.98); }
         
@@ -25,14 +25,13 @@
             background: rgba(255,255,255,0.85); 
             backdrop-filter: blur(20px); border-radius: 30px; 
             box-shadow: var(--shadow); 
-            display: flex; flex-direction: column; 
-            position: relative; /* QUAN TRỌNG */
+            display: flex; flex-direction: column; position: relative; 
             overflow: hidden; border: 2px solid var(--primary); 
         }
         body.dark-mode .app-container { background: rgba(45, 52, 54, 0.9); border-color: #555; }
 
         /* HEADER */
-        .header { padding: 15px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: space-between; z-index: 20; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 0 0 20px 20px; }
+        .header { padding: 15px 20px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: space-between; z-index: 20; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-radius: 0 0 20px 20px; }
         .avatar-wrapper { display: flex; align-items: center; gap: 10px; } .kitty-icon { font-size: 1.8rem; } .theme-btn { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; }
 
         /* CHAT AREA */
@@ -43,45 +42,25 @@
         .typing { display: none; align-self: flex-start; background: var(--chat-ai); padding: 10px; border-radius: 20px; margin-left: 10px; width: fit-content; }
         .dot { display: inline-block; width: 6px; height: 6px; background: #bbb; border-radius: 50%; margin: 0 2px; animation: bounce 1.4s infinite; }
         
-        /* --- NÚT RESET (VỊ TRÍ CHUẨN XÁC) --- */
+        /* INPUT AREA */
+        .input-container { padding: 15px; background: var(--chat-ai); border-top: 1px solid rgba(0,0,0,0.05); display: flex; gap: 10px; align-items: center; position: relative; z-index: 30; min-height: 80px; }
+        input { flex: 1; padding: 12px 15px; border: none; border-radius: 25px; outline: none; background: rgba(0,0,0,0.05); color: var(--chat-text); font-size: 1rem; }
+        .icon-btn { width: 45px; height: 45px; border-radius: 50%; border: none; background: var(--primary); color: white; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.2s; font-size: 1.1rem; }
+        .icon-btn:hover { transform: scale(1.1); }
+        .mic-btn { background: #2ecc71; } .mic-btn.listening { animation: pulse 1s infinite; background: #e74c3c; }
+
+        /* NÚT RESET (VỊ TRÍ CHUẨN - CAO HƠN NÚT GỬI) */
         .float-reset { 
             position: absolute; 
-            bottom: 150px; /* Cách đáy 100px: Nằm ngay trên thanh chat */
-            right: 15px;   /* Căn phải */
-            width: 42px; height: 42px; 
+            bottom: 150px; /* Cao hẳn 130px so với đáy */
+            right: 15px;   /* Nằm bên phải */
+            width: 45px; height: 45px; 
             background: white; border: 2px solid var(--primary); border-radius: 50%; 
             display: flex; justify-content: center; align-items: center; 
-            color: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.15); 
+            color: var(--primary); box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
             cursor: pointer; z-index: 50; transition: 0.3s; 
         }
         .float-reset:hover { transform: rotate(180deg) scale(1.1); }
-
-        /* INPUT AREA (THANH CHAT GỌN GÀNG) */
-        .input-container { 
-            padding: 15px; background: var(--chat-ai); 
-            border-top: 1px solid rgba(0,0,0,0.05); 
-            display: flex; gap: 8px; align-items: center; 
-            position: relative; z-index: 30; 
-            min-height: 75px; /* Chiều cao cố định */
-        }
-        input { 
-            flex: 1; padding: 12px 15px; border: none; 
-            border-radius: 25px; outline: none; background: rgba(0,0,0,0.05); 
-            color: var(--chat-text); font-size: 1rem; 
-        }
-        
-        /* NÚT TRONG THANH CHAT */
-        .icon-btn { 
-            width: 45px; height: 45px; border-radius: 50%; border: none; 
-            color: white; cursor: pointer; 
-            display: flex; justify-content: center; align-items: center; 
-            transition: 0.2s; font-size: 1.1rem; 
-        }
-        .icon-btn:hover { transform: scale(1.1); }
-        
-        .mic-btn { background: #2ecc71; } 
-        .mic-btn.listening { animation: pulse 1s infinite; background: #e74c3c; }
-        .send-btn { background: var(--primary); }
 
         /* TOOLS BAR */
         .tools-bar { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--chat-ai); padding: 10px 0; z-index: 30; }
@@ -90,19 +69,34 @@
         .tool-btn i { font-size: 1.2rem; background: rgba(0,0,0,0.05); padding: 8px; border-radius: 12px; }
 
         /* MODALS */
-        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); z-index: 100; display: none; flex-direction: column; padding: 20px; animation: slideUp 0.3s; overflow-y: auto; }
+        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-bg); z-index: 100; display: none; flex-direction: column; padding: 20px; animation: slideUp 0.3s; overflow-y: auto;}
         .modal.active { display: flex; }
         .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; color: var(--primary); font-size: 1.3rem; }
         .close-btn { background: none; border: none; font-size: 2rem; cursor: pointer; color: var(--chat-text); padding: 0 10px; }
 
-        /* CSS KHÁC */
-        .map-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; padding: 10px; justify-content: center; margin-top: 10px; width: 100%; }
-        .student-seat { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; color: white; font-weight: bold; cursor: pointer; position: relative; box-shadow: 0 4px 8px rgba(0,0,0,0.15); transition: transform 0.2s; }
+        /* --- CSS LỚP HỌC (ĐÃ SỬA) --- */
+        .map-grid { 
+            display: grid; grid-template-columns: repeat(5, 1fr); 
+            gap: 15px; padding: 10px; justify-content: center; margin-top: 10px; 
+            width: 100%;
+        }
+        .student-seat { 
+            width: 45px; height: 45px; 
+            border-radius: 50%; /* BẮT BUỘC ĐỂ TRÒN */
+            display: flex; justify-content: center; align-items: center; 
+            font-size: 0.8rem; color: white; font-weight: bold; 
+            cursor: pointer; position: relative; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transition: transform 0.2s;
+        }
         .student-seat:hover { transform: scale(1.2); z-index: 10; }
+        
+        /* Màu sắc & Hiệu ứng */
         .seat-happy { background-color: #00b894 !important; animation: breathe 3s infinite; }
         .seat-sad { background-color: #74b9ff !important; animation: breathe 4s infinite; }
         .seat-stress { background-color: #ff7675 !important; animation: pulse 2s infinite; }
         .seat-me { border: 3px solid var(--chat-text); box-shadow: 0 0 15px rgba(0,0,0,0.2); background: #ffeaa7; color: #333; }
+
         .student-popup { position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%); width: 90%; background: white; padding: 15px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 150; display: none; animation: popIn 0.3s; text-align: center; border: 2px solid var(--primary); }
         .student-popup.active { display: block; }
         .popup-name { font-weight: bold; font-size: 1.1rem; color: var(--primary); }
@@ -110,9 +104,11 @@
         .send-love-btn { background: #ff7675; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 5px; margin: 0 auto; }
         .floating-heart { position: absolute; font-size: 2rem; color: #ff7675; animation: floatUp 1.5s ease-out forwards; pointer-events: none; z-index: 200; }
 
+        /* THERAPY CSS */
         .therapy-item { background: rgba(0,0,0,0.03); padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
         .therapy-btn-mini { background: var(--primary); color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; }
 
+        /* GAME CSS */
         #gameCanvas { background: #202c3c; border-radius: 15px; margin: 0 auto; display: block; box-shadow: 0 10px 30px rgba(0,0,0,0.4); touch-action: none; }
         .game-header-info { display: flex; justify-content: space-between; margin-bottom: 15px; color: white; font-weight: bold; }
         .score-box { background: #ff9f43; color:white; padding: 5px 15px; border-radius: 20px; }
@@ -139,7 +135,7 @@
     <div class="app-container">
         <div class="header">
             <div class="avatar-wrapper">
-                <i class="fas fa-cat kitty-icon"></i>
+                <img src="https://cdn-icons-png.flaticon.com/512/763/763775.png" alt="" width="10%">
                 <div style="margin-left: 10px;">
                     <div style="font-weight: bold; font-size: 1.1rem;">EmoMap</div>
                     <div style="font-size: 0.75rem; opacity: 0.9;" id="statusText">Trợ lý cảm xúc</div>
@@ -152,13 +148,13 @@
         <div class="typing" id="typingIndicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
         
         <div class="float-reset" onclick="activateReset()" title="Tái tạo năng lượng">
-            <i class="fas fa-redo"></i>
+            <i class="fas fa-leaf"></i>
         </div>
 
         <div class="input-container">
             <input type="text" id="userInput" placeholder="Nhắn tin..." autocomplete="off">
             <button class="icon-btn mic-btn" id="voiceBtn" onclick="startDictation()"><i class="fas fa-microphone"></i></button>
-            <button class="icon-btn send-btn" onclick="handleChat()"><i class="fas fa-paper-plane"></i></button>
+            <button class="icon-btn" onclick="handleChat()"><i class="fas fa-paper-plane"></i></button>
         </div>
 
         <div class="tools-bar">
@@ -174,8 +170,8 @@
                 <button class="close-btn" onclick="closeModal('gameModal')">×</button>
             </div>
             <div class="game-header-info">
-                <div class="score-box"><span class="score-label">Điểm</span><span class="score-val" id="scoreVal">0</span></div>
-                <div class="score-box best-score-box"><span class="score-label">Kỷ lục</span><span class="score-val" id="bestScoreVal">0</span></div>
+                <div class="score-box"><span class="score-label">Điểm </span><span class="score-val" id="scoreVal">0</span></div>
+                <div class="score-box best-score-box"><span class="score-label">Kỷ lục </span><span class="score-val" id="bestScoreVal">0</span></div>
             </div>
             <div style="position: relative;">
                 <canvas id="gameCanvas" width="350" height="380"></canvas>
@@ -239,10 +235,9 @@
             
             const greeting = "Chào bạn! Bạn cần tư vấn gì hôm nay? 😺";
             addMessage(greeting, 'ai');
-            document.getElementById('statusText').innerText = "Groq AI Online ⚡";
+            document.getElementById('statusText').innerText = "Trò truyện tâm sư ⚡";
             
-            const systemPrompt = `
-            ### 1. VAI TRÒ (ROLE)
+            const systemPrompt = `### 1. VAI TRÒ (ROLE)
 Bạn là **EmoMap AI**, một nhà tâm lý học lỗi lạc và người bạn đồng hành đầy thấu cảm. Bạn sở hữu khả năng thấu hiểu sâu sắc tâm lý con người, chuyên phân tích các tầng bậc cảm xúc và đưa ra lời khuyên chữa lành.
 
 ### 2. PHONG CÁCH GIAO TIẾP (TONE & VOICE)
@@ -279,7 +274,7 @@ Khi tiếp nhận thông tin từ người dùng, hãy âm thầm kích hoạt c
 * Tuyệt đối không đưa ra lời khuyên y tế chuyên sâu (thuốc thang).
 * Nếu người dùng có ý định tự hại, hãy chuyển sang quy trình hỗ trợ khẩn cấp (khuyên liên hệ chuyên gia hoặc người thân).
 * **QUAN TRỌNG:** Lệnh 'PLAY_SPOTIFY_NOW' phải chính xác tuyệt đối, không có dấu chấm câu hay ký tự thừa.
-            `;
+`;
 
             messages.push({ role: "system", content: systemPrompt });
             messages.push({ role: "assistant", content: greeting });
@@ -288,6 +283,11 @@ Khi tiếp nhận thông tin từ người dùng, hãy âm thầm kích hoạt c
             
             initGameEngine(); 
         };
+
+        // --- HÀM XỬ LÝ LỌC THINK (QUAN TRỌNG) ---
+        function cleanThinking(text) {
+            return text.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+        }
 
         // --- GAME ENGINE (BLOCK BLAST) ---
         const canvas = document.getElementById('gameCanvas');
@@ -304,9 +304,10 @@ Khi tiếp nhận thông tin từ người dùng, hãy âm thầm kích hoạt c
         let cleanBoardTimer = 0; let gameLoopId;
         let comboCount = 0;
 
-        const SHAPES_EASY = [ { m: [[1]], c: 0 }, { m: [[1,1]], c: 1 }, { m: [[1],[1]], c: 1 }, { m: [[1,1],[1,1]], c: 3 } ];
-        const SHAPES_MEDIUM = [ { m: [[1,1,1]], c: 2 }, { m: [[1],[1],[1]], c: 2 }, { m: [[1,1,1],[0,1,0]], c: 4 }, { m: [[0,1,0],[1,1,1]], c: 4 }, { m: [[1,0],[1,1],[1,0]], c: 4 }, { m: [[0,1],[1,1],[0,1]], c: 4 } ];
-        const SHAPES_HARD = [ { m: [[1,1,0],[0,1,1]], c: 5 }, { m: [[0,1,1],[1,1,0]], c: 5 }, { m: [[1,0,0],[1,1,1]], c: 6 }, { m: [[1,1,1],[0,0,1]], c: 6 }, { m: [[1,1,1,1]], c: 6 } ];
+        const SHAPE_TEMPLATES = [
+            { m: [[1]], c: 0 }, { m: [[1,1]], c: 1 }, { m: [[1,1,1]], c: 2 }, { m: [[1],[1],[1]], c: 2 },
+            { m: [[1,1],[1,0]], c: 4 }, { m: [[1,1,1],[0,1,0]], c: 0 }, { m: [[1,1,0],[0,1,1]], c: 1 }
+        ];
 
         function initGameEngine() {
             if (canvas.width === 0) { canvas.width = 350; canvas.height = 380; }
@@ -334,11 +335,7 @@ Khi tiếp nhận thông tin từ người dùng, hãy âm thầm kích hoạt c
         function getSmartShape() {
             let filledCount = board.flat().filter(c => c !== 0).length;
             let fillRatio = filledCount / (GRID_ROWS * GRID_COLS);
-            let pool;
-            if (fillRatio > 0.65) pool = Math.random() < 0.8 ? SHAPES_EASY : SHAPES_MEDIUM;
-            else if (fillRatio < 0.1) pool = Math.random() < 0.4 ? SHAPES_MEDIUM : SHAPES_HARD;
-            else { let r = Math.random(); if (r < 0.3) pool = SHAPES_EASY; else if (r < 0.7) pool = SHAPES_MEDIUM; else pool = SHAPES_HARD; }
-            return pool[Math.floor(Math.random() * pool.length)];
+            return SHAPE_TEMPLATES[Math.floor(Math.random() * SHAPE_TEMPLATES.length)];
         }
 
         function spawnShapes() {
@@ -519,18 +516,19 @@ Khi tiếp nhận thông tin từ người dùng, hãy âm thầm kích hoạt c
             const input = document.getElementById('userInput'); const text = input.value.trim(); if(!text) return;
             if(SOS_WORDS.some(kw => text.toLowerCase().includes(kw))) { document.getElementById('sosOverlay').style.display='flex'; input.value=''; return; }
             addMessage(text, 'user'); input.value = ''; document.getElementById('typingIndicator').style.display = 'block'; messages.push({ role: "user", content: text });
-            try { const aiText = await callGroqAPI(messages); document.getElementById('typingIndicator').style.display = 'none'; messages.push({ role: "assistant", content: aiText }); processResponse(aiText, text); } catch (error) { document.getElementById('typingIndicator').style.display = 'none'; addMessage("⚠️ Lỗi: " + error.message, 'ai'); }
+            try { const aiText = await callGroqAPI(messages); document.getElementById('typingIndicator').style.display = 'none'; 
+            const cleanAI = cleanThinking(aiText); // LỌC THINK TRƯỚC KHI HIỆN
+            messages.push({ role: "assistant", content: cleanAI }); processResponse(cleanAI, text); } catch (error) { document.getElementById('typingIndicator').style.display = 'none'; addMessage("⚠️ Lỗi: " + error.message, 'ai'); }
         }
         async function callGroqAPI(msgs) {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` }, body: JSON.stringify({ model: "qwen/qwen3-32b", messages: msgs, temperature: 0.7 }) });
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` }, body: JSON.stringify({ model: "qwen/qwen3-32b", messages: msgs, temperature: 0.7 }) }); // ĐỔI MODEL SANG QWEN
             if (!response.ok) throw new Error((await response.json()).error.message); return (await response.json()).choices[0].message.content;
         }
         function processResponse(text, userText) { if (text.includes("PLAY_SPOTIFY_NOW")) { addMessage("Oki! Nhạc lên. 🎶", 'ai'); const t = userText.toLowerCase(); let link = LINK_LOFI; if (t.includes("vui") || t.includes("tuyệt")) link = LINK_VUI; addMessage(`<iframe style="border-radius:12px; margin-top:10px;" src="${link}" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`, 'ai'); } else { addMessage(text.replace(/\*\*/g, ''), 'ai'); } const t = userText.toLowerCase(); let score = 5; if(t.includes('buồn')||t.includes('khóc')) { changeTheme('sad'); score=2; } else if(t.includes('vui')||t.includes('tuyệt')) { changeTheme('happy'); score=10; } else if(t.includes('căng')||t.includes('lo')) { changeTheme('stress'); score=1; } saveHistory(userText, score); }
         function addMessage(h,t){ const b=document.getElementById('chatBox'); const d=document.createElement('div'); d.className=`msg ${t}`; d.innerHTML=h; b.appendChild(d); b.scrollTop=b.scrollHeight; }
         function openModal(id) { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); const m = document.getElementById(id); if(m) { m.classList.add('active'); if(id === 'statsModal') renderChart(); if(id === 'gameModal') initGameEngine(); } }
         function closeModal(id) { const m = document.getElementById(id); if(m) m.classList.remove('active'); }
-        // --- QUAN TRỌNG: HÀM changeTheme ĐÃ ĐƯỢC KHÔI PHỤC ---
-        function changeTheme(e){ document.body.className=''; if(e) document.body.classList.add(`theme-${e}`); checkDarkMode(); }
+        function changeTheme(e){ document.body.className=''; if(e) document.body.classList.add(`theme-${e}`); checkDarkMode(); } 
         function toggleDarkMode() { document.body.classList.toggle('dark-mode'); localStorage.setItem('kitty_darkMode', document.body.classList.contains('dark-mode')); document.querySelector('.theme-btn i').className = document.body.classList.contains('dark-mode') ? 'fas fa-sun' : 'fas fa-moon'; }
         function checkDarkMode() { if(localStorage.getItem('kitty_darkMode') === 'true') { document.body.classList.add('dark-mode'); document.querySelector('.theme-btn i').className = 'fas fa-sun'; } }
         function startDictation() { if (window.hasOwnProperty('webkitSpeechRecognition')) { var recognition = new webkitSpeechRecognition(); recognition.lang = "vi-VN"; const btn = document.getElementById('voiceBtn'); btn.classList.add('listening'); recognition.start(); recognition.onresult = function(e) { document.getElementById('userInput').value = e.results[0][0].transcript; recognition.stop(); btn.classList.remove('listening'); }; } else { alert("Dùng Chrome để nói."); } }
@@ -572,7 +570,7 @@ Khi tiếp nhận thông tin từ người dùng, hãy âm thầm kích hoạt c
         window.activateReset=function(){ document.getElementById('resetOverlay').style.display='flex'; try{playWhiteNoise();}catch(e){} let t=30; resetInt=setInterval(()=>{ t--; document.getElementById('resetCount').innerText=t; if(t<=0) closeReset(); },1000); }
         window.closeReset=function(){ clearInterval(resetInt); document.getElementById('resetOverlay').style.display='none'; stopWhiteNoise(); addMessage("Chào mừng cậu quay lại! 🌿", 'ai'); }
         
-        // --- FIXED THERAPY (SỬA LỖI "AI") ---
+        // --- FIXED THERAPY ---
         window.startExercise=function(t){ 
             closeModal('therapyModal');
             let text = "";
@@ -586,4 +584,3 @@ Khi tiếp nhận thông tin từ người dùng, hãy âm thầm kích hoạt c
     </script>
 </body>
 </html>
-
