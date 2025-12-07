@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EmoMap - Perfect Fixed</title>
+    <title>Kitty AI - Perfect Fixed</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -141,7 +141,7 @@
             <div class="avatar-wrapper">
                 <i class="fas fa-cat kitty-icon"></i>
                 <div style="margin-left: 10px;">
-                    <div style="font-weight: bold; font-size: 1.1rem;">EmoMap</div>
+                    <div style="font-weight: bold; font-size: 1.1rem;">Kitty AI</div>
                     <div style="font-size: 0.75rem; opacity: 0.9;" id="statusText">Trợ lý cảm xúc</div>
                 </div>
             </div>
@@ -174,8 +174,8 @@
                 <button class="close-btn" onclick="closeModal('gameModal')">×</button>
             </div>
             <div class="game-header-info">
-                <div class="score-box"><span class="score-label">Điểm </span><span class="score-val" id="scoreVal">0</span></div>
-                <div class="score-box best-score-box"><span class="score-label">Kỷ lục </span><span class="score-val" id="bestScoreVal">0</span></div>
+                <div class="score-box"><span class="score-label">Điểm</span><span class="score-val" id="scoreVal">0</span></div>
+                <div class="score-box best-score-box"><span class="score-label">Kỷ lục</span><span class="score-val" id="bestScoreVal">0</span></div>
             </div>
             <div style="position: relative;">
                 <canvas id="gameCanvas" width="350" height="380"></canvas>
@@ -241,7 +241,8 @@
             addMessage(greeting, 'ai');
             document.getElementById('statusText').innerText = "Groq AI Online ⚡";
             
-            const systemPrompt = `### 1. VAI TRÒ (ROLE)
+            const systemPrompt = `
+            ### 1. VAI TRÒ (ROLE)
 Bạn là **EmoMap AI**, một nhà tâm lý học lỗi lạc và người bạn đồng hành đầy thấu cảm. Bạn sở hữu khả năng thấu hiểu sâu sắc tâm lý con người, chuyên phân tích các tầng bậc cảm xúc và đưa ra lời khuyên chữa lành.
 
 ### 2. PHONG CÁCH GIAO TIẾP (TONE & VOICE)
@@ -272,12 +273,13 @@ Khi tiếp nhận thông tin từ người dùng, hãy âm thầm kích hoạt c
 **Trường hợp 3: Người dùng ĐỒNG Ý nghe nhạc**
 * Điều kiện: Người dùng nói "Có", "Oke", "Nghe", "Uhm", hoặc bất kỳ tín hiệu đồng ý nào.
 * Hành động: Trả lời DUY NHẤT cụm từ lệnh bên dưới (không thêm bất kỳ từ nào khác).
-* **OUTPUT:** `PLAY_SPOTIFY_NOW`
+* **OUTPUT:** 'PLAY_SPOTIFY_NOW'
 
 ### 5. QUY TẮC CỐT LÕI (CRITICAL RULES)
 * Tuyệt đối không đưa ra lời khuyên y tế chuyên sâu (thuốc thang).
 * Nếu người dùng có ý định tự hại, hãy chuyển sang quy trình hỗ trợ khẩn cấp (khuyên liên hệ chuyên gia hoặc người thân).
-* **QUAN TRỌNG:** Lệnh `PLAY_SPOTIFY_NOW` phải chính xác tuyệt đối, không có dấu chấm câu hay ký tự thừa.`;
+* **QUAN TRỌNG:** Lệnh 'PLAY_SPOTIFY_NOW' phải chính xác tuyệt đối, không có dấu chấm câu hay ký tự thừa.
+            `;
 
             messages.push({ role: "system", content: systemPrompt });
             messages.push({ role: "assistant", content: greeting });
@@ -584,4 +586,3 @@ Khi tiếp nhận thông tin từ người dùng, hãy âm thầm kích hoạt c
     </script>
 </body>
 </html>
-
