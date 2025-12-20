@@ -311,3 +311,40 @@ body.light-mode .msg.ai {
 /* Dark mode cho Modal */
 body.dark-mode .modal-content { background: #2d3436; color: white; }
 body.dark-mode .modal-header { border-bottom-color: #444; }
+/* === THANH TRƯỢT "CHAMELEON" (TỰ ĐỔI MÀU THEO BIẾN) === */
+
+/* 1. Cấu hình chung */
+::-webkit-scrollbar {
+    width: 10px; /* Độ rộng vừa phải */
+}
+
+/* 2. Rãnh trượt (Track) - Ăn theo màu nền trang web */
+::-webkit-scrollbar-track {
+    background: var(--bg-color); 
+}
+
+/* 3. Tay cầm (Thumb) - MẶC ĐỊNH (DARK MODE) */
+::-webkit-scrollbar-thumb {
+    /* Dùng màu xám đậm (gần đen) để dịu mắt trên nền đen */
+    background: #333333; 
+    border-radius: 10px;
+    /* Viền trùng màu nền tạo cảm giác thanh trượt nhỏ lại */
+    border: 2px solid var(--bg-color); 
+}
+
+/* Khi di chuột vào -> Sáng lên màu TÍM (var(--primary)) */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary); 
+}
+
+/* 4. Tay cầm (Thumb) - LIGHT MODE */
+body.light-mode ::-webkit-scrollbar-thumb {
+    /* Dùng màu xám bạc để nổi trên nền trắng */
+    background: #b2bec3; 
+    border: 2px solid var(--bg-color);
+}
+
+/* Khi di chuột vào -> Sáng lên màu XANH DƯƠNG (var(--primary)) */
+body.light-mode ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary); 
+}
