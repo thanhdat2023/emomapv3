@@ -37,7 +37,7 @@ if (history.length === 0) {
         renderClassMap(); // Vẽ sơ đồ lớp
 
         // Tin nhắn mở đầu
-        const greeting = "Chào bạn! Mình là Kitty AI. Bạn đang cảm thấy thế nào? 😺";
+        const greeting = "Chào bạn! Mình là EmoMap . Bạn đang cảm thấy thế nào? 😺";
         addMessage(greeting, 'ai');
         
         const systemPrompt = `# 1. VAI TRÒ CỐT LÕI (ROLE)
@@ -610,3 +610,4 @@ function openModal(id) {
         document.getElementById('userInput').addEventListener("keypress", e=>{if(e.key==="Enter") handleChat()});
         
         
+
