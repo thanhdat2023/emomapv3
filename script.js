@@ -1,7 +1,7 @@
 // ============================================================
     // 1. CẤU HÌNH & KHỞI TẠO DỮ LIỆU MẪU (BÍ KÍP ĐỂ KHÔNG BỊ TREO)
     // ============================================================
-    const API_KEY = "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"; // 👈 Dán Key của bạn vào đây
+    const API_KEY = "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"; // 👈 Dán Key của bạn vào đây
 
     const LINK_VUI = "https://open.spotify.com/embed/playlist/4lPLZ0npUWzSpeg0BPOVdp?si=UjYu0QMTTiudxfcW1kPKxg";
     const LINK_LOFI = "https://open.spotify.com/embed/playlist/0jSMk9A4W6wnFUkfrBuRaG?si=-W7y9Rc6Sxq_k6MhiTugRw";
@@ -610,4 +610,5 @@ function openModal(id) {
         document.getElementById('userInput').addEventListener("keypress", e=>{if(e.key==="Enter") handleChat()});
         
         
+
 
