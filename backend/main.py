@@ -139,5 +139,8 @@ def chat_endpoint():
 # 5. CHẠY SERVER
 # ==========================================
 if __name__ == '__main__':
-    # Sửa dòng này trong file app.py hoặc main.py của bạn
-    app.run(debug=True, host='0.0.0.0', port=5000, use_reloader=False)
+    # Lấy PORT từ biến môi trường của Render, nếu không có thì mặc định là 5000 (để chạy local)
+    port = int(os.environ.get('PORT', 5000))
+    
+    # Tắt debug khi deploy để bảo mật và tăng tốc độ
+    app.run(host='0.0.0.0', port=port, debug=False)
