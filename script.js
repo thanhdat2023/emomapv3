@@ -2,7 +2,7 @@
 // 1. CẤU HÌNH KẾT NỐI PYTHON SERVER
 // ============================================================
 // Đây là địa chỉ Server Python (đang chạy file app.py)
-const API_URL = "http://127.0.0.1:5000/chat"; 
+const API_URL = "https://emomapv3-backend.onrender.com/chat"; 
 
 // (Xóa biến API_KEY cũ đi vì Python server đã lo việc đó rồi)
 
