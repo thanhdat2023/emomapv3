@@ -3,47 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EmoMap - Pro Version</title>
+    <title>Kitty AI - Pro Version</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-    <div class="app-container">
-        <div class="header">
-            <div class="avatar-wrapper">
-                <i class="fas fa-cat kitty-icon"></i>
-                <div style="margin-left: 10px;">
-                    <div style="font-weight: bold; font-size: 1.1rem;">EmoMap</div>
-                    <div style="font-size: 0.75rem; opacity: 0.9;" id="statusText">Trợ lý cảm xúc</div>
-                </div>
+    <div class="external-header">
+        <div class="mascot-box">
+            <span class="mascot-emoji">🐱</span>
             </div>
-            <button class="theme-btn" onclick="toggleTheme()"><i class="fas fa-adjust"></i></button>
+
+        <h1 class="brand-title">Góc tâm lý học đường</h1>
+        <p class="brand-slogan">Nơi lắng nghe, thấu hiểu và chia sẻ mọi tâm tư của bạn
+</p>
+    </div>
+    
+
+    <div class="app-container">
+        
+        <div class="chat-header-tools">
+            <button class="theme-btn" onclick="toggleTheme()" title="Đổi chế độ Sáng/Tối">
+                🌙
+            </button>
         </div>
 
-        <div class="chat-area" id="chatBox"></div>
-        <div class="typing" id="typingIndicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div class="chat-area" id="chatBox">
+
+        </div>
+
+        <div class="typing" id="typingIndicator">
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        </div>
         
         <div class="float-reset" onclick="activateReset()" title="Tái tạo năng lượng">
             <i class="fas fa-redo"></i>
         </div>
 
         <div class="input-container">
-            <input type="text" id="userInput" placeholder="Nhắn tin..." autocomplete="off">
-            <button class="icon-btn mic-btn" id="voiceBtn" onclick="startDictation()"><i class="fas fa-microphone"></i></button>
-            <button class="icon-btn send-btn" onclick="handleChat()"><i class="fas fa-paper-plane"></i></button>
+            <input type="text" id="userInput" placeholder="Nhập tin nhắn..." autocomplete="off">
+            <button class="icon-btn mic-btn" id="voiceBtn" onclick="startDictation()">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <button class="icon-btn send-btn" onclick="handleChat()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
         </div>
 
         <div class="tools-bar">
-            <button class="tool-btn" onclick="openModal('statsModal')"><i class="fas fa-chart-line" style="color:#0984e3"></i> Thống kê</button>
-            <button class="tool-btn" onclick="openModal('therapyModal')"><i class="fas fa-heartbeat" style="color:#e84393"></i> Trị liệu</button>
-            <button class="tool-btn" onclick="openModal('gameModal')"><i class="fas fa-gamepad" style="color:#f1c40f"></i> Game</button>
-            <button class="tool-btn" onclick="openModal('mapModal')"><i class="fas fa-users" style="color:#00b894"></i> Lớp học</button>
+            <button class="tool-btn" onclick="openModal('statsModal')">
+                <i class="fas fa-chart-line" style="color:#0984e3"></i> Thống kê
+            </button>
+            <button class="tool-btn" onclick="openModal('therapyModal')">
+                <i class="fas fa-heartbeat" style="color:#e84393"></i> Trị liệu
+            </button>
+            <button class="tool-btn" onclick="openModal('gameModal')">
+                <i class="fas fa-gamepad" style="color:#f1c40f"></i> Game
+            </button>
+            <button class="tool-btn" onclick="openModal('mapModal')">
+                <i class="fas fa-users" style="color:#00b894"></i> Lớp học
+            </button>
         </div>
+    </div>
 
-        <div class="modal" id="gameModal">
-            <div class="modal-header">
+    <div class="modal" id="gameModal">
+        <div class="modal-content"> <div class="modal-header">
                 <span>🎮 Block Blast</span>
                 <button class="close-btn" onclick="closeModal('gameModal')">×</button>
             </div>
@@ -51,9 +76,13 @@
                 <div class="score-box"><span class="score-label">Điểm</span><br><span class="score-val" id="scoreVal">0</span></div>
                 <div class="score-box"><span class="score-label">Kỷ lục</span><br><span class="score-val" id="bestScoreVal">0</span></div>
             </div>
-            <div style="position: relative;">
-                <canvas id="gameCanvas" width="350" height="380"></canvas>
-                <div id="gameOverOverlay"><h2>GAME OVER!</h2><p>Điểm: <span id="finalScore">0</span></p><button class="restart-btn" onclick="resetGame()">CHƠI LẠI</button></div>
+            <div style="position: relative; display: flex; justify-content: center;">
+                <canvas id="gameCanvas" width="300" height="380"></canvas>
+                <div id="gameOverOverlay">
+                    <h2>GAME OVER!</h2>
+                    <p>Điểm: <span id="finalScore">0</span></p>
+                    <button class="restart-btn" onclick="resetGame()">CHƠI LẠI</button>
+                </div>
             </div>
             <div class="preview-container">
                 <canvas id="preview1" class="preview-canvas" width="80" height="80"></canvas>
@@ -61,68 +90,100 @@
                 <canvas id="preview3" class="preview-canvas" width="80" height="80"></canvas>
             </div>
         </div>
+    </div>
 
-        <div class="modal" id="statsModal">
-    <div class="modal-header">
-        <span>📈 Biểu Đồ Cảm Xúc</span>
-        <button class="close-btn" onclick="closeModal('statsModal')">×</button>
+    <div class="modal" id="statsModal">
+        <div class="modal-backdrop" onclick="closeModal('statsModal')"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-chart-line"></i> Biểu Đồ Cảm Xúc</h3>
+                <span class="close-btn" onclick="closeModal('statsModal')">×</span>
+            </div>
+            
+            <div class="chart-wrapper">
+                <canvas id="emotionChart"></canvas>
+            </div>
+
+            <div class="modal-footer">
+                <button onclick="renderChart()" class="btn-action btn-refresh">
+                    <i class="fas fa-sync"></i> Vẽ lại
+                </button>
+                <button onclick="clearStats()" class="btn-action btn-reset">
+                    <i class="fas fa-trash-alt"></i> Xóa dữ liệu
+                </button>
+            </div>
+        </div>
     </div>
-    <div style="height:300px; padding: 10px;">
-        <canvas id="emotionChart"></canvas>
-    </div>
-    <div style="text-align: center; margin-top: 10px;">
-        <button onclick="clearStats()" style="background:none; border:1px solid #ff6b81; color:#ff6b81; padding:5px 15px; border-radius:15px; cursor:pointer; font-size:0.8rem;">
-            <i class="fas fa-trash"></i> Xóa dữ liệu cũ
-        </button>
-    </div>
-</div>
-        
-        <div class="modal" id="mapModal">
-            <div class="modal-header"><span>❤️ Mạng Lưới Cảm Xúc</span><button class="close-btn" onclick="closeModal('mapModal')">×</button></div>
+
+    <div class="modal" id="mapModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>❤️ Mạng Lưới Cảm Xúc</span>
+                <button class="close-btn" onclick="closeModal('mapModal')">×</button>
+            </div>
             <div class="map-container">
                 <div class="map-grid" id="classMapGrid"></div>
                 <div class="student-popup" id="studentPopup">
                     <div class="popup-name" id="popupName">Bạn bàn 3</div>
                     <div class="popup-status" id="popupStatus">"Đang hơi mệt..."</div>
-                    <button class="send-love-btn" onclick="sendLove()"><i class="fas fa-heart"></i> Gửi năng lượng</button>
+                    <button class="send-love-btn" onclick="sendLove()">
+                        <i class="fas fa-heart"></i> Gửi năng lượng
+                    </button>
                 </div>
             </div>
         </div>
-        
-        <div class="modal" id="therapyModal"><div class="modal-header"><span>💊 Trị Liệu</span><button class="close-btn" onclick="closeModal('therapyModal')">×</button></div>
-            <div class="therapy-item"><span>Hít thở 4-7-8</span><button class="therapy-btn-mini" onclick="startExercise('breath')">Tập</button></div>
-            <div class="therapy-item"><span>Thư giãn cổ vai</span><button class="therapy-btn-mini" onclick="startExercise('stretch')">Tập</button></div>
-            <div class="therapy-item"><span>Grounding</span><button class="therapy-btn-mini" onclick="startExercise('grounding')">Tập</button></div>
-        </div>
-        
-        <div id="resetOverlay"><h2>Thư giãn...</h2><div class="reset-circle" id="resetCount">30</div><button onclick="closeReset()" style="margin-top:20px; padding:10px 20px; border-radius:10px; border:none; cursor:pointer; background:rgba(255,255,255,0.2); color:white;">Đã ổn hơn</button></div>
-        <div id="sosOverlay"><div style="font-size:4rem">⚠️</div><h2>CẢNH BÁO</h2><p>Hãy liên hệ người thân ngay!</p><a href="tel:111" class="sos-btn">Gọi 111</a><button onclick="document.getElementById('sosOverlay').style.display='none'" style="background:none; border:1px solid white; color:white; padding:10px; margin-top:20px; border-radius:10px; cursor:pointer;">Đóng</button></div>
     </div>
-    <div class="modal" id="statsModal">
-    <div class="modal-backdrop" onclick="closeStats()"></div>
-    <div class="modal-content">
+    
+    <div class="modal" id="therapyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>💊 Trị Liệu</span>
+                <button class="close-btn" onclick="closeModal('therapyModal')">×</button>
+            </div>
+            <div class="therapy-item">
+                <span>Hít thở 4-7-8</span>
+                <button class="therapy-btn-mini" onclick="startExercise('breath')">Tập</button>
+            </div>
+            <div class="therapy-item">
+                <span>Thư giãn cổ vai</span>
+                <button class="therapy-btn-mini" onclick="startExercise('stretch')">Tập</button>
+            </div>
+            <div class="therapy-item">
+                <span>Grounding (Tiếp đất)</span>
+                <button class="therapy-btn-mini" onclick="startExercise('grounding')">Tập</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="sourceModal">
+    <div class="modal-backdrop" onclick="closeModal('sourceModal')"></div> <div class="modal-content">
         <div class="modal-header">
-            <h3><i class="fa-solid fa-chart-line"></i> Biểu Đồ Cảm Xúc</h3>
-            <span class="close-btn" onclick="closeStats()"><i class="fa-solid fa-xmark"></i></span>
+            <h3>📖 Nguồn tham khảo</h3>
+            <button class="close-btn" onclick="closeModal('sourceModal')">×</button>
         </div>
-        
-        <div class="chart-wrapper">
-            <canvas id="emotionChart"></canvas>
-        </div>
-
-        <div class="modal-footer">
-            <button onclick="renderChart()" class="btn-action btn-refresh">
-                <i class="fa-solid fa-rotate-right"></i> Vẽ lại
-            </button>
-            <button onclick="resetData()" class="btn-action btn-reset">
-                <i class="fa-solid fa-trash-can"></i> Xóa lịch sử
-            </button>
-        </div>
+        <div class="modal-body" id="sourceContentText">
+            </div>
     </div>
 </div>
 
+    <div id="resetOverlay">
+        <h2>Thư giãn...</h2>
+        <div class="reset-circle" id="resetCount">30</div>
+        <button onclick="closeReset()" style="margin-top:20px; padding:10px 20px; border-radius:10px; border:none; cursor:pointer; background:rgba(255,255,255,0.2); color:white;">
+            Đã ổn hơn
+        </button>
+    </div>
+
+    <div id="sosOverlay">
+        <div style="font-size:4rem">⚠️</div>
+        <h2>CẢNH BÁO</h2>
+        <p>Hãy liên hệ người thân ngay!</p>
+        <a href="tel:111" class="sos-btn">Gọi 111</a>
+        <button onclick="document.getElementById('sosOverlay').style.display='none'" style="background:none; border:1px solid white; color:white; padding:10px; margin-top:20px; border-radius:10px; cursor:pointer;">
+            Đóng
+        </button>
+    </div>
+    
 
     <script src="script.js"></script>
 </body>
 </html>
-

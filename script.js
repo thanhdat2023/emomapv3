@@ -1,7 +1,10 @@
 // ============================================================
-    // 1. CẤU HÌNH & KHỞI TẠO DỮ LIỆU MẪU (BÍ KÍP ĐỂ KHÔNG BỊ TREO)
-    // ============================================================
-    const API_KEY = "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"; // 👈 Dán Key của bạn vào đây
+// 1. CẤU HÌNH KẾT NỐI PYTHON SERVER
+// ============================================================
+// Đây là địa chỉ Server Python (đang chạy file app.py)
+const API_URL = "http://127.0.0.1:5000/chat"; 
+
+// (Xóa biến API_KEY cũ đi vì Python server đã lo việc đó rồi)
 
     const LINK_VUI = "https://open.spotify.com/embed/playlist/4lPLZ0npUWzSpeg0BPOVdp?si=UjYu0QMTTiudxfcW1kPKxg";
     const LINK_LOFI = "https://open.spotify.com/embed/playlist/0jSMk9A4W6wnFUkfrBuRaG?si=-W7y9Rc6Sxq_k6MhiTugRw";
@@ -105,71 +108,265 @@ Thực hiện lần lượt 3 bước trong câu trả lời:
     // ============================================================
     // 3. LOGIC CHAT (GIỮ NGUYÊN CODE ĐANG CHẠY TỐT CỦA BẠN)
     // ============================================================
-    async function handleChat() {
-        const input = document.getElementById('userInput'); 
-        const text = input.value.trim(); 
-        if(!text) return;
+// ============================================================
+// 3. LOGIC CHAT (ĐÃ KẾT NỐI PYTHON SERVER)
+// ============================================================
+async function handleChat() {
+    const input = document.getElementById('userInput'); 
+    const text = input.value.trim(); 
+    if(!text) return;
 
-        if(SOS_WORDS.some(kw => text.toLowerCase().includes(kw))) { 
-            document.getElementById('sosOverlay').style.display='flex'; 
-            input.value=''; return; 
-        }
-
-        addMessage(text, 'user'); 
-        input.value = ''; 
-        document.getElementById('typingIndicator').style.display = 'block'; 
-        messages.push({ role: "user", content: text });
-
-        try { 
-            const aiText = await callGroqAPI(messages); 
-            document.getElementById('typingIndicator').style.display = 'none'; 
-            messages.push({ role: "assistant", content: aiText }); 
-            
-            // Xử lý nhạc và chấm điểm
-            processResponse(aiText, text); 
-            
-        } catch (error) { 
-            document.getElementById('typingIndicator').style.display = 'none'; 
-            addMessage("⚠️ Lỗi: " + error.message, 'ai'); 
-        }
+    // 1. Kiểm tra SOS (Giữ nguyên)
+    if(SOS_WORDS.some(kw => text.toLowerCase().includes(kw))) { 
+        document.getElementById('sosOverlay').style.display='flex'; 
+        input.value=''; return; 
     }
 
-    async function callGroqAPI(msgs) {
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", { 
-            method: "POST", 
-            headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` }, 
-            body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: msgs, temperature: 0.7 }) 
-        });
-        if (!response.ok) throw new Error((await response.json()).error.message); 
-        return (await response.json()).choices[0].message.content;
-    }
+    // 2. Hiện tin nhắn người dùng
+    addMessage(text, 'user'); 
+    input.value = ''; 
+    document.getElementById('typingIndicator').style.display = 'block'; 
+    
+    // Lưu vào lịch sử hiển thị (Python server tự nhớ ngữ cảnh nên không cần gửi mảng messages đi nữa)
+    messages.push({ role: "user", content: text });
 
+    try { 
+        // --- GỌI SERVER PYTHON ---
+        const aiText = await callPythonServer(text); 
+        
+        document.getElementById('typingIndicator').style.display = 'none'; 
+        messages.push({ role: "assistant", content: aiText }); 
+        
+        // 3. Xử lý nhạc và chấm điểm (Giữ nguyên logic cũ)
+        processResponse(aiText, text); 
+        
+    } catch (error) { 
+        document.getElementById('typingIndicator').style.display = 'none'; 
+        // Báo lỗi chi tiết để dễ sửa
+        addMessage(`⚠️ Lỗi kết nối Python: ${error.message}. \n👉 Bạn đã chạy lệnh "python app.py" chưa?`, 'ai'); 
+        console.error(error);
+    }
+}
+
+// --- HÀM MỚI: GỌI QUA PYTHON (Thay thế callGroqAPI) ---
+// ==========================================
+// 1. SỬA HÀM callPythonServer (Để lấy trọn gói JSON)
+// ==========================================
+async function callPythonServer(userText) {
+    const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userText })
+    });
+
+    if (!response.ok) throw new Error("Server Python lỗi");
+    
+    // Trả về toàn bộ data (gồm .response và .sources) thay vì chỉ .response
+    return await response.json(); 
+}
+
+// ==========================================
+// 2. SỬA HÀM handleChat (Để hiển thị nguồn)
+// ==========================================
+async function handleChat() {
+    const input = document.getElementById('userInput');
+    const text = input.value.trim();
+    if(!text) return;
+
+    // Xử lý SOS (Giữ nguyên code cũ của bạn ở đây)
+    // ...
+
+    // Hiển thị tin nhắn người dùng
+    addMessage(text, 'user');
+    input.value = '';
+    document.getElementById('typingIndicator').style.display = 'block';
+
+    try {
+        // 1. Gọi Python
+        const data = await callPythonServer(text);
+        
+        document.getElementById('typingIndicator').style.display = 'none';
+
+        // 2. Xử lý logic Nhạc & Văn bản
+        let finalResponse = data.response; // Lấy văn bản gốc
+
+        // Kiểm tra xem có lệnh bật nhạc không
+        if (finalResponse.includes("PLAY_SPOTIFY_NOW")) {
+            // A. Bật nhạc
+            playSpotify(text); // Gọi hàm bật nhạc riêng
+            
+            // B. Xóa lệnh khỏi văn bản để hiển thị cho đẹp
+            finalResponse = finalResponse.replace("PLAY_SPOTIFY_NOW", "").trim();
+        }
+
+        // 3. Hiển thị câu trả lời (Văn bản đã được làm sạch)
+        if (finalResponse) {
+            addMessage(finalResponse, 'ai');
+        }
+
+        // 4. Hiển thị Nguồn (Source) - NẾU CÓ
+        if (data.sources && data.sources.length > 0) {
+            renderSources(data.sources);
+        }
+
+        // 5. Chấm điểm cảm xúc (Lưu history)
+        scoreEmotion(text); 
+
+    } catch (error) {
+        document.getElementById('typingIndicator').style.display = 'none';
+        addMessage(`⚠️ Lỗi kết nối: ${error.message}`, 'ai');
+        console.error(error);
+    }
+}
+
+// ==========================================
+// 3. THÊM HÀM MỚI: VẼ NÚT VIEW SOURCE
+// ==========================================
+function renderSources(sources) {
+    const chatBox = document.getElementById('chatBox');
+    
+    // Tạo ID ngẫu nhiên cho mỗi lần chat để nút bấm mở đúng cái bảng của nó
+    const id = "source-" + Date.now();
+    
+    // Tạo HTML cho danh sách nguồn
+    let sourceHTML = sources.map((s, index) => `
+        <div class="source-item" style="margin-bottom: 8px; padding: 8px; background: rgba(0,0,0,0.05); border-radius: 6px; font-size: 0.85em;">
+            <div style="font-weight: bold; color: #6c5ce7;">📄 ${s.file} (Trang ${s.page})</div>
+            <div style="font-style: italic; color: #555; margin-top: 4px;">"${s.content}"</div>
+            <div style="font-size: 0.7em; color: #888; text-align: right;">Độ khớp: ${s.score}%</div>
+        </div>
+    `).join('');
+
+    // Tạo nút bấm và khung chứa
+    const container = document.createElement('div');
+    container.className = 'message ai source-container';
+    container.style.background = 'transparent'; // Không màu nền
+    container.style.padding = '0';
+    
+    /* --- BẮT ĐẦU ĐOẠN CODE THAY THẾ --- */
+
+// 1. Lưu nội dung HTML của nguồn vào một biến toàn cục (để tránh lỗi dấu nháy khi truyền vào onclick)
+if (!window.sourceDataMap) window.sourceDataMap = {}; // Tạo kho chứa nếu chưa có
+window.sourceDataMap[id] = sourceHTML; // Lưu nội dung nguồn với ID tương ứng
+
+// 2. Chỉ hiển thị Nút bấm (Bỏ cái div ẩn bên dưới đi)
+container.innerHTML = `
+    <button onclick="openSourceModalFromId('${id}')" style="
+        background: none; border: 1px solid #6c5ce7; color: #6c5ce7; 
+        padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 0.8em; 
+        display: flex; align-items: center; gap: 5px; transition: all 0.3s;">
+        <span>📚 Xem nguồn dẫn chứng (${sources.length})</span>
+        <i class="fas fa-external-link-alt"></i>
+    </button>
+`;
+/* --- KẾT THÚC ĐOẠN CODE THAY THẾ --- */
+
+    chatBox.appendChild(container);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Hàm bật/tắt hiển thị nguồn
+window.toggleSource = function(id) {
+    const el = document.getElementById(id);
+    const icon = document.getElementById('icon-' + id);
+    if (el.style.display === 'none') {
+        el.style.display = 'block';
+        icon.innerText = '▲';
+    } else {
+        el.style.display = 'none';
+        icon.innerText = '▼';
+    }
+}
     function processResponse(text, userText) { 
-        // 1. Nhạc
-        if (text.includes("PLAY_SPOTIFY_NOW")) { 
-            addMessage("Oki! Nhạc lên. 🎶", 'ai'); 
-            const t = userText.toLowerCase(); 
-            let link = LINK_LOFI; 
-            if (t.includes("vui") || t.includes("tuyệt")) link = LINK_VUI; 
-            addMessage(`<iframe style="border-radius:12px; margin-top:10px;" src="${link}" width="100%" height="152" frameBorder="0" allowfullscreen="" loading="lazy"></iframe>`, 'ai'); 
-        } else { 
-            // Hiện tin nhắn
-            let clean = text.replace(/\*\*/g, '').replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
-            addMessage(clean, 'ai'); 
-        } 
+    // 1. Xử lý Nhạc
+    // Nếu Python gửi tín hiệu PLAY_SPOTIFY_NOW
+    if (text.includes("PLAY_SPOTIFY_NOW")) { 
+        // Chọn nhạc dựa trên nội dung chat của người dùng
+        const t = userText.toLowerCase(); 
+        let link = LINK_LOFI; // Mặc định là Lofi
+        
+        // Nếu user nói vui/tuyệt/happy thì đổi sang nhạc vui
+        if (t.includes("vui") || t.includes("tuyệt") || t.includes("khỏe")) link = LINK_VUI; 
+        
+        // Hiện khung nhạc Spotify
+        addMessage(`
+            <div style="margin-top: 10px; border-radius: 12px; overflow: hidden;">
+                <iframe style="border-radius:12px" src="${link}" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+            <div style="font-size: 0.8em; margin-top: 5px; opacity: 0.8;">🎶 Đã bật nhạc cho bạn rồi nè!</div>
+        `, 'ai');
 
-        // 2. Chấm điểm (Chạy ngầm an toàn)
-        try {
-            const t = userText.toLowerCase(); 
-            let score = 5; 
-            
-            if(t.includes('vui') || t.includes('tuyệt') || t.includes('haha')) score = 9; 
-            else if(t.includes('buồn') || t.includes('khóc') || t.includes('chán')) score = 3; 
-            else if(t.includes('căng') || t.includes('lo') || t.includes('sợ')) score = 1; 
-            
-            saveHistory(score); 
-        } catch(e) { console.log("Lỗi chấm điểm:", e); }
+        // Xóa mã lệnh đi để tin nhắn chat không bị xấu
+        text = text.replace("PLAY_SPOTIFY_NOW", "").trim();
+    } 
+
+    // 2. Hiện tin nhắn lời nói (Nếu sau khi xóa lệnh mà vẫn còn chữ thì hiện ra)
+    // Loại bỏ các thẻ suy nghĩ <think>...</think> nếu có
+    let cleanText = text.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+    
+    if (cleanText) {
+        // Chỉ hiện tin nhắn nếu nó không rỗng
+        // (Đôi khi Python chỉ gửi mỗi lệnh nhạc thì không cần hiện bóng chat trống)
+        const chatBox = document.getElementById('chatBox');
+        // Kiểm tra tin nhắn cuối cùng, nếu là nhạc thì không add thêm text thừa
+        addMessage(cleanText, 'ai'); 
     }
+
+    // 3. Chấm điểm cảm xúc (Giữ nguyên logic cũ)
+    try {
+        const t = userText.toLowerCase(); 
+        let score = 5; 
+        if(t.includes('vui') || t.includes('tuyệt') || t.includes('haha')) score = 9; 
+        else if(t.includes('buồn') || t.includes('khóc') || t.includes('chán')) score = 3; 
+        else if(t.includes('căng') || t.includes('lo') || t.includes('sợ')) score = 1; 
+        saveHistory(score); 
+    } catch(e) { console.log("Lỗi chấm điểm:", e); }
+}
+// ==========================================
+// HÀM CHẤM ĐIỂM CẢM XÚC (Code cũ của bạn)
+// ==========================================
+/* Hàm này dùng để mở bảng nguồn. 
+   Bạn tìm chỗ nào trong code cũ đang xử lý nút "Xem nguồn" thì gọi hàm này vào.
+*/
+// --- HÀM MỞ MODAL TỪ ID (Dán vào cuối file script.js) ---
+
+function openSourceModalFromId(id) {
+    // 1. Lấy nội dung nguồn từ kho lưu trữ (dựa vào ID)
+    const content = window.sourceDataMap[id];
+    
+    // 2. Tìm cái khung nội dung của Modal
+    const contentBox = document.getElementById('sourceContentText'); // Đảm bảo ID này khớp với bên HTML
+    
+    if (contentBox) {
+        // Nếu có nội dung thì hiện, không thì báo lỗi
+        contentBox.innerHTML = content ? content : "<p>Không tìm thấy dữ liệu nguồn.</p>";
+        
+        // 3. Mở Modal lên (Thêm class active)
+        const modal = document.getElementById('sourceModal');
+        if (modal) modal.classList.add('active');
+    } else {
+        console.error("Lỗi: Không tìm thấy thẻ có id='sourceContentText' trong HTML");
+    }
+}
+function scoreEmotion(userText) {
+    try {
+        const t = userText.toLowerCase(); 
+        let score = 5; 
+        
+        // Logic chấm điểm
+        if(t.includes('vui') || t.includes('tuyệt') || t.includes('haha')) score = 9; 
+        else if(t.includes('buồn') || t.includes('khóc') || t.includes('chán')) score = 3; 
+        else if(t.includes('căng') || t.includes('lo') || t.includes('sợ')) score = 1; 
+        
+        // Gọi hàm lưu lịch sử (đảm bảo hàm saveHistory vẫn còn trong file của bạn)
+        if (typeof saveHistory === "function") {
+            saveHistory(score); 
+        } else {
+            console.log("Đã chấm điểm:", score, "(nhưng chưa có hàm saveHistory)");
+        }
+        
+    } catch(e) { console.log("Lỗi chấm điểm:", e); }
+}
 
     // ============================================================
     // 4. HỆ THỐNG THỐNG KÊ (ĐÃ SỬA ĐỂ HIỆN NGAY LẬP TỨC)
@@ -610,5 +807,6 @@ function openModal(id) {
         document.getElementById('userInput').addEventListener("keypress", e=>{if(e.key==="Enter") handleChat()});
         
         
+
 
 

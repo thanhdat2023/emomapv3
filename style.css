@@ -1,60 +1,131 @@
 /* --- 1. CẤU HÌNH MÀU SẮC (THEME VARS) --- */
-        :root { 
-            /* DARK MODE (Mặc định): Tím - Hồng - Đen */
-            --primary: #9b59b6;  /* Tím */
-            --accent: #ff6b81;   /* Hồng */
-            --bg-color: #000000;
-            --chat-ai: rgba(255, 255, 255, 0.1);
-            --chat-text: #ffffff;
-            --shadow: 0 10px 30px rgba(0,0,0,0.5);
-            --modal-bg: rgba(20, 20, 20, 0.95);
-            --input-bg: rgba(255, 255, 255, 0.05);
-            --border-color: rgba(255, 255, 255, 0.1);
-        }
+body {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    gap: 15px; /* Khoảng cách giữa Tiêu đề và Khung chat */
+}
+        /* 1. MẶC ĐỊNH LÀ LIGHT MODE (NỀN SÁNG) */
+:root {
+    --primary: #0984e3;  /* Xanh dương đậm */
+    --accent: #00cec9;   /* Xanh lam/ngọc */
+    --bg-color: #ffffff; /* Nền trắng */
+    --chat-ai: rgba(0, 0, 0, 0.05);
+    --chat-text: #090909; /* Chữ đen */
+    --shadow: 0 10px 30px rgba(0,0,0,0.1);
+    --modal-bg: rgba(255, 255, 255, 0.98);
+    --input-bg: rgba(0, 0, 0, 0.03);
+    --border-color: rgba(0, 0, 0, 0.1);
+}
 
-        /* LIGHT MODE: Trắng - Xanh Lam - Xanh Dương */
-        body.light-mode { 
-            --primary: #0984e3;  /* Xanh dương đậm */
-            --accent: #00cec9;   /* Xanh lam/ngọc */
-            --bg-color: #ffffff;
-            --chat-ai: rgba(0, 0, 0, 0.05);
-            --chat-text: #2d3436;
-            --shadow: 0 10px 30px rgba(0,0,0,0.1);
-            --modal-bg: rgba(255, 255, 255, 0.98);
-            --input-bg: rgba(0, 0, 0, 0.03);
-            --border-color: rgba(0, 0, 0, 0.1);
-        }
+/* 2. KHI BẬT DARK MODE (NỀN TỐI) */
+body.dark-mode {
+    --primary: #9b59b6;  /* Tím */
+    --accent: #ff6b81;   /* Hồng */
+    --bg-color: #000000; /* Nền đen */
+    --chat-ai: rgba(255, 255, 255, 0.1);
+    --chat-text: #000000; /* Chữ trắng */
+    --shadow: 0 10px 30px rgba(0,0,0,0.5);
+    --modal-bg: rgba(20, 20, 20, 0.95);
+    --input-bg: rgba(255, 255, 255, 0.05);
+    --border-color: rgba(255, 255, 255, 0.1);
+}
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; transition: all 0.5s ease; }
         
         /* --- 2. NỀN ĐỘNG (GRADIENT ANIMATION) --- */
         body { 
-            /* Mặc định Dark: Đen - Tím - Hồng */
+    /* Bí quyết sống động: Pha trộn 5 màu: 
+       Trắng (Nền) -> Xanh Nhạt -> Tím Nhạt -> Hồng Phấn -> Xanh Ngọc 
+    */
+    background: linear-gradient(
+        -45deg, 
+        #c4e0e5, /* Xanh băng */
+        #e0c3fc, /* Tím pastel nhẹ */
+        #ffdde1, /* Hồng phấn nhẹ */
+        #81ecec  /* Xanh ngọc */
+    );
+    
+    /* Tăng kích thước nền lên 600% để màu loang rộng và sâu hơn */
+    background-size: 600% 600%;
+    
+    /* 45s: Chuyển động siêu chậm (Slow Motion) */
+    animation: gradientBG 45s ease infinite; 
+    
+    color: var(--chat-text); 
+    display: flex; justify-content: center; align-items: center; 
+    height: 100vh; overflow: hidden; 
+}
+
+        /* Nền cho Light Mode: Trắng - Xanh Lam - Xanh Dương */
+        body.dark-mode {
             background: linear-gradient(-45deg, #000000, #2c003e, #6a0572, #ff007f);
             background-size: 400% 400%;
             animation: gradientBG 10s ease infinite; 
-            color: var(--chat-text); 
-            display: flex; justify-content: center; align-items: center; 
-            height: 100vh; overflow: hidden; 
         }
 
-        /* Nền cho Light Mode: Trắng - Xanh Lam - Xanh Dương */
-        body.light-mode {
-            background: linear-gradient(-45deg, #ffffff, #74b9ff, #0984e3, #81ecec, #7ae582);
-            background-size: 400% 400%;
-            animation: gradientBG 10s ease infinite;
-        }
+       @keyframes gradientBG {
+    0% { 
+        background-position: 0% 50%; 
+    }
+    50% { 
+        background-position: 100% 50%; 
+    }
+    100% { 
+        background-position: 0% 50%; 
+    }
+}
+.external-header {
+    text-align: center;
+    z-index: 20;
+    flex-shrink: 0; /* Không bị co lại khi màn hình nhỏ */
+    animation: floatHeader 3s ease-in-out infinite; /* Hiệu ứng bay bay */
+}
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+/* Con mèo */
+.mascot-box {
+    display: inline-block;
+    position: relative;
+}
 
+.mascot-emoji {
+    font-size: 3.5rem; /* Kích thước mèo */
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2));
+}
+
+/* Tên App "EmoMap" */
+.brand-title {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin: 0;
+    line-height: 1.1;
+    
+    /* Màu Gradient Tím - Xanh */
+    background: linear-gradient(to right, #6c5ce7, #0984e3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+/* Slogan bên dưới */
+.brand-slogan {
+    font-size: 0.9rem;
+    color: #636e72;
+    font-weight: 600;
+    margin-top: 5px;
+    background: rgba(255, 255, 255, 0.4);
+    padding: 4px 15px;
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
+}
         /* KHUNG APP (KÍNH MỜ) */
         .app-container {
     /* --- Giữ lại các thuộc tính bố cục cũ --- */
-    width: 100%; max-width: 450px; height: 95vh;
+    width: 95%; max-width: 450px; height: calc(100vh - 180px) !important;
+    margin: 0 !important;
     display: flex; flex-direction: column; position: relative;
     overflow: hidden;
     border-radius: 30px; /* Bo tròn góc */
@@ -76,7 +147,7 @@
     z-index: 10; /* Đảm bảo nó nằm trên nền động */
 }
 /* Khi bật chế độ Sáng, khung kính sẽ đục hơn một chút để dễ nhìn */
-body.light-mode .app-container {
+body.dark-mode .app-container {
     /* Tăng độ đậm nền lên 20% */
     background: rgba(255, 255, 255, 0.2);
     
@@ -91,7 +162,19 @@ body.light-mode .app-container {
         .header { padding: 15px 20px; background: rgba(0,0,0,0.05); color: var(--chat-text); display: flex; align-items: center; justify-content: space-between; z-index: 20; border-bottom: 1px solid var(--border-color); }
         .avatar-wrapper { display: flex; align-items: center; gap: 10px; } 
         .kitty-icon { font-size: 1.8rem; color: var(--primary); } 
-        .theme-btn { background: var(--input-bg); border: 1px solid var(--border-color); color: var(--chat-text); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; }
+        .theme-btn {
+    position: absolute; /* Giúp nút nổi lên trên và di chuyển tự do */
+    top: 15px;          /* Cách mép trên 15px */
+    right: 15px;        /* QUAN TRỌNG: Cách mép PHẢI 15px */
+    left: auto;         /* Hủy bỏ lệnh canh trái cũ (nếu có) */
+    z-index: 100;       /* Đảm bảo nút luôn nằm trên cùng */
+    
+    /* Các style làm đẹp cũ giữ nguyên (nếu có) */
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
         .theme-btn:hover { transform: rotate(30deg); background: var(--primary); color: white; }
 
         /* CHAT AREA */
@@ -118,7 +201,7 @@ body.light-mode .app-container {
     border: 1px solid rgba(255, 255, 255, 0.2);
 
     /* 4. Màu chữ: Bắt buộc màu Trắng để nổi trên nền tối */
-    color: #ffffff;
+    color: #070707;
 
     /* 5. Bóng đổ: Tạo độ nổi 3D nhẹ */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -347,4 +430,58 @@ body.light-mode ::-webkit-scrollbar-thumb {
 /* Khi di chuột vào -> Sáng lên màu XANH DƯƠNG (var(--primary)) */
 body.light-mode ::-webkit-scrollbar-thumb:hover {
     background: var(--primary); 
+}
+/* BƯỚC 2: Style cho cửa sổ nổi */
+.modal {
+    display: none; /* Mặc định ẩn */
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 9999; /* Luôn nằm trên cùng */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal.active {
+    display: flex; /* Hiện lên thì dùng Flex để căn giữa */
+}
+
+.modal-backdrop {
+    position: absolute;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Nền đen mờ */
+    backdrop-filter: blur(3px);
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    width: 90%;
+    max-width: 500px; /* Độ rộng tối đa */
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    animation: popUp 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); /* Hiệu ứng nảy */
+    z-index: 10000;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.close-btn {
+    background: #ff7675; color: white;
+    border: none; width: 30px; height: 30px;
+    border-radius: 50%; cursor: pointer;
+}
+
+/* Hiệu ứng nảy lên */
+@keyframes popUp {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }
